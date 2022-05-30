@@ -1,0 +1,249 @@
+body{
+    margin:0;
+    padding: 0;
+    font-family: 'Times New Roman', serif;
+}
+
+#menu{
+   width: 250px;
+   height: 100%;
+   position: fixed;
+   left: 0;
+   top: 0;
+   background-color: rgb(23, 24, 33);
+   overflow-y: auto;
+}
+
+#menu.hide{
+    animation: hide-menu 2s forwards;
+}
+
+#menu.show{
+    animation: show-menu 2s forwards;
+}
+
+@keyframes hide-menu{
+    0%{
+        left: 0;
+    }
+    100%{
+        left: -250px;
+    }
+}
+
+
+@keyframes show-menu{
+    0%{
+        left: -250px;
+    }
+    100%{
+        left: 0px;
+    }
+}
+
+#menu-option{
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+#sub-menu{
+    background-color: rgb(38, 55, 65);
+    width: 100%;
+    height: 0px;
+    overflow: hidden;
+}
+
+#sub-menu.show{
+    animation: show-sub-menu 2s forwards;
+}
+
+#sub-menu.hide{
+    animation: hide-sub-menu 2s forwards;
+}
+
+@keyframes hide-sub-menu{
+    0%{
+        height: 290px;
+    }
+    100%{
+        height: 0px;
+    }
+}
+
+
+@keyframes show-sub-menu{
+    0%{
+        height: 0px;
+    }
+    100%{
+        height: 290px;
+    }
+}
+
+#sub-menu ul{
+    margin: 0;
+}
+
+#sub-menu ul li {
+    padding: 5px 0px;
+    color: rgb(138 165 181);
+    list-style: circle;
+    cursor: pointer;
+}
+
+#sub-menu ul li:hover {
+    color:white;
+}
+
+#sub-menu ul li a{
+    text-decoration: none;
+    color:unset;
+}
+
+#menu-option:hover{
+    background-color: rgb(0, 95, 112);
+}
+
+#company-name{
+    background-color: rgb(0, 94, 113);
+    position: relative;
+    height: 50px;
+    width: 100%;
+    color:white;
+    font-size: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#body{
+    position: relative;
+    left: 250px;
+    top:0;
+    width: calc(100% - 250px);
+    background-color: whitesmoke;
+}
+
+#body.expand{
+    animation: expand-body 2s forwards;
+}
+
+#body.shrink{
+    animation: shrink-body 2s forwards;
+}
+
+@keyframes expand-body {
+    0%{
+        left:250px;
+        width: calc(100% - 250px);
+    }
+    100%{
+        left:0px;
+        width: 100%;
+    }
+}
+
+@keyframes shrink-body {
+    0%{
+        left:0px;
+        width: 100%;
+    }
+    100%{
+        left:250px;
+        width: calc(100% - 250px);
+    }
+}
+
+nav{
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 50px;
+    background-color: rgb(23, 24, 33);   
+}
+
+#content{
+    padding:10px;
+}
+
+.material-icons{
+    color: white;
+}
+
+#user{
+    float: right;
+    color: white;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+#avatar{
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+#user label{
+    margin-right: 30px;
+    cursor: pointer;
+}
+
+@media only screen and (max-width:600px) {
+    #body{
+        width: 100%;
+        left:0;
+    }
+    @keyframes shrink-body {
+        0%{
+            opacity: 0;
+            visibility: hidden;
+        }
+        100%{
+            opacity: 1;
+            visibility:initial;
+        }
+    }
+    
+    @keyframes expand-body {
+        0%{
+            opacity: 1;
+            visibility:initial;
+        }
+        100%{
+            opacity: 0;
+            visibility: hidden;
+        }
+    }
+
+    #menu{
+        width: 0;
+    }
+
+    @keyframes show-menu{
+        0%{
+            width: 100%;
+        }
+        100%{
+            width: 0;
+        }
+    }
+    
+    
+    @keyframes hide-menu{
+        0%{
+            width: 0;
+        }
+        100%{
+            width: 100%;
+        }
+    }
+}

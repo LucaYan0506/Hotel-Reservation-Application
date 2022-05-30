@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href= {% static 'hotelManagement/style.css' %}>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Hotel Management</title>
+    {% block head %}{% endblock head %}
+</head>
+<body>
+    <div id="menu">
+        <div id="company-name">Company Name</div>
+        <div style="color: white; display: flex; align-items: center; padding: 10px; user-select: none;">
+                <div id="avatar" style="width: 60px; height: 60px;">
+                    <img src="{% static 'Unity game 3.jpg' %}" style="max-width:60px; max-height:60px" alt="avatar"> 
+                </div>
+                <div style="display:flex; flex-direction: column;" >
+                    <b style="font-size: 20px">name</b>
+                    <label style="font-size: 12px; margin:6px 0;"><div style="width:10px; height: 10px; display: inline-block; border-radius:50%; background-color:green;"></div> Online</label>
+                </div>
+            </div>
+            <div class="menu-option-container" id="dashboard">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">dashboard</i>
+                    Dashboard
+                </div>
+            </div>
+
+            <div class="menu-option-container" id="bookings">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">event_note</i>
+                    Bookings
+                </div>
+            </div>
+            
+            <div class="menu-option-container" id="booked-rooms">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">home</i>
+                    Booked Rooms
+                </div>
+            </div>
+
+            <div class="menu-option-container" id="booked-halls">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">home</i>
+                    Booked Halls
+                </div>
+            </div>
+
+            <div class="menu-option-container" id="guests">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">people</i>
+                    Guests
+                </div>
+            </div>
+
+            <div class="menu-option-container" id="menus">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">menu</i>
+                    Menus
+                </div>
+            </div>
+
+            <div class="menu-option-container" id="availability-calendar">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">event_available</i>
+                    Availability Calendar
+                </div>
+            </div>
+
+            <div class="menu-option-container" id="hotel-configuration">
+                <div id="menu-option" onclick="show_hideSubMenu(this)">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">business</i>
+                    Hotel Configuration
+                    <i class="material-icons" style="position: absolute; right: 15px; font-size: 24px; margin:0 5px;">chevron_left</i>
+                </div>
+                <div id="sub-menu">
+                    <ul>
+                        <li id="room-types"><a href="{% url 'room_types' %}">Room Types</a></li>
+                        <li id="rooms">Rooms</li>
+                        <li id="hall-types">Hall Types</li>
+                        <li id="halls">Halls</li>
+                        <li id="price-manager">Price Manager</li>
+                        <li id="paid-services">Paid Services</li>
+                        <li id="coupon-management">Coupon Management</li>
+                        <li id="floors">Floors</li>
+                        <li id="amenities">Amenities</li>
+                        <li id="housekeeping-status">Housekeeping Status</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="menu-option-container" id="Reports">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">receipt</i>
+                    Reports
+                </div>
+            </div>
+            
+            <div class="menu-option-container" id="hr-management">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">people</i>
+                    HR Management
+                </div>
+            </div>
+
+            <div class="menu-option-container" id="administrative">
+                <div id="menu-option">
+                    <i class="material-icons" style="font-size: 24px; margin:0 5px;">settings</i>
+                    Administrative
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="body">
+        <nav>
+            <i onclick="show_hideMenu()" class="material-icons" style="font-size: 50px;cursor:pointer;user-select:none;">menu</i>
+            <div id="user">
+                <div id="avatar">
+                    <img src="{% static 'Unity game 3.jpg' %}" style="max-width:50px; max-height:50px" alt="avatar"> 
+                </div>
+                <label>name</label>
+            </div>
+        </nav>
+        <div id="content">
+            {% block body %}
+            {% endblock body %}
+        </div>
+    </div>
+
+    <script src="{% static 'hotelManagement/index.js' %}"></script>
+</body>
+</html>
