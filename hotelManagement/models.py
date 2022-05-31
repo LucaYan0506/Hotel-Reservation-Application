@@ -1,3 +1,4 @@
+from dataclasses import field
 from django.db import models
 from django.forms import ModelForm
 from ckeditor.fields import RichTextField 
@@ -6,7 +7,7 @@ from ckeditor.fields import RichTextField
 class Room_Type(models.Model):
     Title = models.CharField(max_length=50)
     Short_Code = models.CharField(max_length=25)
-    Description = RichTextField()
+    Description = RichTextField(blank=True)
     Base_Occupancy = models.IntegerField()
     Max_Occupancy = models.IntegerField()
     Extra_Bed = models.IntegerField()
@@ -39,4 +40,25 @@ class Room_Type(models.Model):
 class Room_TypeForm(ModelForm):
     class Meta:
         model = Room_Type
+        fields = '__all__'
+
+
+class Floor(models.Model):
+    Name = models.CharField(max_length=50)
+    Number = models.IntegerField(unique=True)
+    Description = RichTextField(blank=True)
+    Active = models.BooleanField()
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'Name': self.Name,
+            'Number': self.Number,
+            'Description': self.Description,
+            'Active' :self.Active,
+        }
+
+class FloorForm(ModelForm):
+    class Meta:
+        model = Floor
         fields = '__all__'

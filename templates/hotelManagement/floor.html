@@ -2,15 +2,15 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'hotelManagement/roomTypes.css' %}">
+    <link rel="stylesheet" href="{% static 'hotelManagement/floor.css' %}">
 {% endblock head %}
 
 {% block body %}
-    <h1>Room Types</h1>
+    <h1>Floor</h1>
 
     <div id="table-container">
-        <p style="padding:0;margin-top:0;">Room Types</p>
-        <button onclick="show_roomTypesForm()" class="btn" id="new-room-types"><b>+ </b>Add</button>
+        <p style="padding:0;margin-top:0;">Floor</p>
+        <button onclick="show_floorForm()" class="btn" id="new-floor"><b>+ </b>Add</button>
         <div style="clear: both;"></div>
         <div id="search-bar-container">
             Search:
@@ -33,7 +33,8 @@
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
-                  <th scope="col">Short Code</th>
+                  <th scope="col">Floor Number</th>
+                  <th scope="col">Active</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
@@ -45,15 +46,15 @@
     </div>
 
     <div id="form-container" style="font-size:18px;display: none;">
-        <form action="/admin/room_types/form/" onsubmit="return validation(this)" method="POST">
+        <form action="/admin/floor/form/" onsubmit="validation()" method="POST">
           {% csrf_token %}
           {{ form }}
           <button class="btn" style=" color: #fff;background-color: #28a745;border-color: #28a745;float: right; width: calc(50% - 10px);;">Add</button>
         </form>
-        <button onclick="hide_roomTypesForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
+        <button onclick="hide_floorForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
     </div>
 
     <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
     <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
-    <script type="text/javascript" src="{% static "hotelManagement/roomTypes.js" %}"></script>
+    <script type="text/javascript" src="{% static "hotelManagement/floor.js" %}"></script>
 {% endblock body %}
