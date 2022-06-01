@@ -16,8 +16,13 @@ class Room_Type(models.Model):
     Base_Price = models.IntegerField()
     Additional_Person_Price = models.IntegerField()
     Extra_Bed_Price = models.IntegerField()
+    image = models.ImageField(blank=True, null=True, upload_to='images/room_types/')
 
     def serialize(self):
+        url = ''
+        if (self.image):
+            url = self.image.url
+
         return {
             'pk': self.pk,
             'Title': self.Title, 
@@ -31,6 +36,7 @@ class Room_Type(models.Model):
             'Base_Price': self.Base_Price,
             'Additional_Person_Price': self.Additional_Person_Price,
             'Extra_Bed_Price': self.Extra_Bed_Price,
+            'Image': url,
         }
 
     def __str__(self):

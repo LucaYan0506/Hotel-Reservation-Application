@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'clientSide',
     'hotelManagement',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -115,7 +116,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 STATICFILES_DIRS = [
@@ -127,3 +127,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AWS_ACCESS_KEY_ID = 'AKIA36K3KQNOUVQUEMWK'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'hotel-reservation-application-bucket'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+#STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

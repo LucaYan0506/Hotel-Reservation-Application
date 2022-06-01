@@ -1,7 +1,10 @@
 from math import floor
+from re import A
 from django.shortcuts import render, reverse
 from django.http import HttpResponse,JsonResponse, HttpResponseRedirect
+from django.core.files.storage import default_storage
 from .models import *
+
 # Create your views here.
 
 def indexView(request):
@@ -14,8 +17,9 @@ def room_typeView(request):
 
 def add_room_type(request):
     if request.method == 'POST':
-        formset = Room_TypeForm(request.POST)
+        formset = Room_TypeForm(request.POST,request.FILES)
         if formset.is_valid():
+            formset.image = request.FILES['image']
             formset.save()
             return JsonResponse({
             'Result':'Succeed',
@@ -63,10 +67,11 @@ def update_root_type(request):
     if request.method == 'POST':
         data = request.POST
         room_type = Room_Type.objects.get(pk = data['pk'])
-        formset = Room_TypeForm(request.POST)
+        formset = Room_TypeForm(request.POST,request.FILES)
         if formset.is_valid():
             for key in data:
                 setattr(room_type, key, data[key])
+            room_type.image = request.FILES['image']
             room_type.save()
             return JsonResponse({'Result':'Succeed',},safe=False)
                         

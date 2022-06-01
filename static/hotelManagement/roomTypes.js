@@ -12,6 +12,13 @@ document.querySelector('#search-bar').addEventListener('keypress', e => {
     }
 })
 
+document.querySelector('#form-container #id_image').addEventListener('change', () =>{
+    const [file] = document.querySelector('#form-container #id_image').files
+    if (file) {
+        document.querySelector('form img').src =  URL.createObjectURL(file)
+    }
+})
+
 function show_roomTypesForm(){
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
@@ -129,7 +136,6 @@ CKEDITOR.on('instanceReady', function(ev) {
 
     });
   
-
 function view_roomType(pk){
     show_roomTypesForm();
 
@@ -168,6 +174,10 @@ function view_roomType(pk){
 
         document.querySelector('#form-container #id_Extra_Bed_Price').value = room_type.Extra_Bed_Price;
         document.querySelector('#form-container #id_Extra_Bed_Price').disabled = true;
+
+        document.querySelector('#form-container #id_image').disabled = true;
+
+        document.querySelector('form img').src = room_type.Image
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -217,6 +227,8 @@ function edit_roomType(pk){
         document.querySelector('#form-container #id_Additional_Person_Price').value = room_type.Additional_Person_Price;
 
         document.querySelector('#form-container #id_Extra_Bed_Price').value = room_type.Extra_Bed_Price;
+
+        document.querySelector('form img').src = room_type.Image
     })
 
     const input = document.querySelector('input');
@@ -236,11 +248,19 @@ function delete_roomType(pk){
     }
 }
 
+document.querySelector('form').onsubmit = () =>{
+    return validation(document.querySelector('form'));
+}
+
 function validation(elem){
-    const data = new URLSearchParams(new FormData(elem));
+    const data = new FormData(elem);
     data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+    
     fetch(elem.action,{
         method: 'POST',
+        header: {  
+            'Content-Type': "multipart/form-data",
+        }, 
         body: data,
         credentials: 'same-origin',
     })
@@ -261,8 +281,6 @@ function validation(elem){
             }
         }
     })
-    
+
     return false;
-
-
 }

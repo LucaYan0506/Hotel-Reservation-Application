@@ -45,9 +45,10 @@
     </div>
 
     <div id="form-container" style="font-size:18px;display: none;">
-        <form action="/admin/room_types/form/" onsubmit="return validation(this)" method="POST">
+        <form action="/admin/room_types/form/" enctype="multipart/form-data" method="POST">
           {% csrf_token %}
           {{ form }}
+          <img src="" style="display:block;margin:10px;width:100%; max-width:500px" onerror="this.error=null;this.src='{% static 'images/no_image.jpg' %}'">
           <button class="btn" style=" color: #fff;background-color: #28a745;border-color: #28a745;float: right; width: calc(50% - 10px);;">Add</button>
         </form>
         <button onclick="hide_roomTypesForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
