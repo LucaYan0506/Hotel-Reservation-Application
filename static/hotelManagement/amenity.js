@@ -40,9 +40,18 @@ function create_row(amenity,i){
     <td>{{row.Title}}</td>
     <td>{{row.Short_Code}}</td>
     <td>
-        <button class="btn" style="border:solid 1px gray;">View</button>
-        <button class="btn" style="color: #fff; background-color: #007bff; border-color: #007bff;">Edit</button>
-        <button class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">Delete</button>
+        <button class="btn" onclick="view_amenity(1)" style="border:solid 1px gray;">
+            <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
+            View
+        </button>
+        <button class="btn" onclick="edit_amenity(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+            <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
+            Edit
+        </button>
+        <button class="btn" onclick="delete_amenity(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+            <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
+            Delete
+        </button>
     </td>
 </tr>
 */
@@ -64,9 +73,18 @@ function create_row(amenity,i){
 
     const td3 = document.createElement('td');
     td3.innerHTML = `   
-    <button class="btn" onclick="view_amenity(${amenity.pk})" style="border:solid 1px gray;">View</button>
-    <button class="btn" onclick="edit_amenity(${amenity.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">Edit</button>
-    <button class="btn" onclick="delete_amenity(${amenity.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">Delete</button>`;
+    <button class="btn" onclick="view_amenity(1)" style="border:solid 1px gray;">
+        <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
+        View
+    </button>
+    <button class="btn" onclick="edit_amenity(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+        <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
+        Edit
+    </button>
+    <button class="btn" onclick="delete_amenity(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+        <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
+        Delete
+    </button>`;
 
     tr.append(th);
     tr.append(td1);

@@ -20,4 +20,10 @@ urlpatterns = [
     path('amenity/info/',views.get_amenity, name="get_amenity"),
     path('amenity/update/',views.update_amenity, name="update_floor"),
     path('amenity/delete/',views.delete_amenity, name="delete_floor"),
+
+    path('room/',views.roomView, name="room"),
+    path('room/form/',views.add_room, name="add_room"),
+    path('room/info/',views.get_room, name="get_room"),
+    path('room/update/',views.update_room, name="update_floor"),
+    path('room/delete/',views.delete_room, name="delete_floor"),
 ]
