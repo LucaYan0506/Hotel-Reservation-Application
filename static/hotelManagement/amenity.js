@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () =>{
     show_hideSubMenu(document.querySelector('.menu-option-container#hotel-configuration #menu-option'))
     document.querySelector('.menu-option-container#hotel-configuration #menu-option').style.background = 'rgb(0,95,112)';
-    document.querySelector('.menu-option-container#hotel-configuration #sub-menu #floors').style.color = 'white';
+    document.querySelector('.menu-option-container#hotel-configuration #sub-menu #amenities').style.color = 'white';
     load();
 })
 
@@ -10,22 +10,30 @@ document.querySelector('#search-bar').addEventListener('keypress', e => {
         start = 1;
         load();
     }
+});
+
+document.querySelector('form').onsubmit = () =>{
+    return validation(document.querySelector('form'));
+};
+
+document.querySelector('#form-container #id_image').addEventListener('change', () =>{
+    const [file] = document.querySelector('#form-container #id_image').files
+    if (file) {
+        document.querySelector('form img').src =  URL.createObjectURL(file)
+    }
 })
 
-document.querySelector('form').onsubmit = () => {
-    return validation(document.querySelector('form'));
-}
 
-function show_floorForm(){
+function show_amenityForm(){
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
 }
 
-function hide_floorForm(){
-    location.reload('/admin/floor/')
+function hide_amenityForm(){
+    location.reload('/admin/amenity/')
 }
 
-function create_row(floor,i){
+function create_row(amenity,i){
 /*
 <tr>
     <th scope="row">{{row.pk}}</th>
@@ -45,28 +53,25 @@ function create_row(floor,i){
     th.innerHTML = i;
 
     const td1 = document.createElement('td');
-    td1.innerHTML = floor.name;
+    td1.innerHTML = amenity.name;
+
 
     const td2 = document.createElement('td');
-    td2.innerHTML = floor.number;
+    if (amenity.active)
+        td2.innerHTML = 'Active';
+    else
+        td2.innerHTML = 'Inactive';
 
     const td3 = document.createElement('td');
-    if (floor.active)
-        td3.innerHTML = 'Active';
-    else
-        td3.innerHTML = 'Inactive';
-
-    const td4 = document.createElement('td');
-    td4.innerHTML = `   
-    <button class="btn" onclick="view_floor(${floor.pk})" style="border:solid 1px gray;">View</button>
-    <button class="btn" onclick="edit_floor(${floor.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">Edit</button>
-    <button class="btn" onclick="delete_floor(${floor.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">Delete</button>`;
+    td3.innerHTML = `   
+    <button class="btn" onclick="view_amenity(${amenity.pk})" style="border:solid 1px gray;">View</button>
+    <button class="btn" onclick="edit_amenity(${amenity.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">Edit</button>
+    <button class="btn" onclick="delete_amenity(${amenity.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">Delete</button>`;
 
     tr.append(th);
     tr.append(td1);
     tr.append(td2);
     tr.append(td3);
-    tr.append(td4);
 
     document.querySelector('.table tbody').append(tr);
 }
@@ -87,13 +92,13 @@ function load(){
         document.querySelector('#btn-container').remove()
     let end = start + quantity - 1;
     let contain = document.querySelector('#search-bar').value;
-    //show floor
-    fetch(`/admin/floor/info/?start=${start}&end=${end}&contain=${contain}`)
+    //show amenity
+    fetch(`/admin/amenity/info/?start=${start}&end=${end}&contain=${contain}`)
     .then(response => response.json())
     .then(data =>{
         let i = start;
-        data.floor.forEach(floor => {
-           create_row(floor,i++);
+        data.amenity.forEach(amenity => {
+           create_row(amenity,i++);
         });
 
         //increasing start
@@ -123,7 +128,7 @@ function load(){
         nextBtn.onclick = () => {
             load();
         }
-        nextBtn.disabled = start > data.total_floor;
+        nextBtn.disabled = start > data.total_amenity;
         btn_container.append(nextBtn);
 
         const div_clear = document.createElement('div');
@@ -141,24 +146,23 @@ CKEDITOR.on('instanceReady', function(ev) {
     });
   
 
-function view_floor(pk){
-    show_floorForm();
+function view_amenity(pk){
+    show_amenityForm();
 
-    fetch(`/admin/floor/info/?pk=${pk}`)
+    fetch(`/admin/amenity/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(floor => {
-        document.querySelector('#form-container #id_name').value = floor.name;
+    .then(amenity => {
+        document.querySelector('#form-container #id_name').value = amenity.name;
         document.querySelector('#form-container #id_name').disabled = true;
 
-        document.querySelector('#form-container #id_number').value = floor.number;
-        document.querySelector('#form-container #id_number').disabled = true;
-
-        document.querySelector('#form-container #id_active').checked = floor.active;
+        document.querySelector('#form-container #id_active').checked = amenity.active;
         document.querySelector('#form-container #id_active').disabled = true;
 
-        editor.setData(floor.description)
+        editor.setData(amenity.description)
         editor.setReadOnly(true);
 
+        document.querySelector('#form-container img').src = amenity.image;
+        document.querySelector('#form-container #id_image').disabled = true;
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -181,19 +185,19 @@ function view_floor(pk){
     document.querySelector('#form-container').append(a)
 }
 
-function edit_floor(pk){
-    show_floorForm();
+function edit_amenity(pk){
+    show_amenityForm();
 
-    fetch(`/admin/floor/info/?pk=${pk}`)
+    fetch(`/admin/amenity/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(floor => {
-        document.querySelector('#form-container #id_name').value = floor.name;
+    .then(amenity => {
+        document.querySelector('#form-container #id_name').value = amenity.name;
 
-        document.querySelector('#form-container #id_number').value = floor.number;
+        document.querySelector('#form-container #id_active').checked = amenity.active;
 
-        document.querySelector('#form-container #id_active').checked = floor.active;
+        editor.setData(amenity.description)
 
-        editor.setData(floor.description)
+        document.querySelector('#form-container img').src = amenity.image;
     })
 
     const input = document.querySelector('input');
@@ -202,14 +206,14 @@ function edit_floor(pk){
     input.id = 'id_pk';
     input.name = 'pk';
     document.querySelector('form').append(input);
-    document.querySelector('form').action = "/admin/floor/update/"
+    document.querySelector('form').action = "/admin/amenity/update/"
 
 }
 
-function delete_floor(pk){
-    if (confirm('Are you sure to delete this floor?')){
+function delete_amenity(pk){
+    if (confirm('Are you sure to delete this amenity?')){
         fetch()
-        window.location.replace(`/admin/floor/delete/?pk=${pk}`)
+        window.location.replace(`/admin/amenity/delete/?pk=${pk}`)
     }
 }
 
@@ -218,19 +222,19 @@ function delete_floor(pk){
 function validation(elem){
     const data = new FormData(elem);
     data.append('Description', editor.getData())
-    data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+    
     fetch(elem.action,{
         method: 'POST',
-        header: {  
+        header: {
             'Content-Type': "multipart/form-data",
-        }, 
+        },
         body: data,
         credentials: 'same-origin',
     })
     .then(response => response.json())
     .then(message => {
         if (message.Result == 'Succeed')
-            location.reload('/admin/floor/')
+            location.reload('/admin/amenity/')
         else{
             alert(message.Result)
 
@@ -244,6 +248,5 @@ function validation(elem){
             }
         }
     })
-    
     return false;
 }

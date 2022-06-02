@@ -48,10 +48,10 @@ function create_row(room_type,i){
     th.innerHTML = i;
 
     const td1 = document.createElement('td');
-    td1.innerHTML = room_type.Title;
+    td1.innerHTML = room_type.title;
 
     const td2 = document.createElement('td');
-    td2.innerHTML = room_type.Short_Code;
+    td2.innerHTML = room_type.short_code;
 
     const td3 = document.createElement('td');
     td3.innerHTML = `   
@@ -142,42 +142,45 @@ function view_roomType(pk){
     fetch(`/admin/room_types/info/?pk=${pk}`)
     .then(response => response.json())
     .then(room_type => {
-        document.querySelector('#form-container #id_Title').value = room_type.Title;
-        document.querySelector('#form-container #id_Title').disabled = true;
+        console.log(room_type)
+        document.querySelector('#form-container #id_title').value = room_type.title;
+        document.querySelector('#form-container #id_title').disabled = true;
 
-        document.querySelector('#form-container #id_Short_Code').value = room_type.Short_Code;
-        document.querySelector('#form-container #id_Short_Code').disabled = true;
+        document.querySelector('#form-container #id_short_code').value = room_type.short_code;
+        document.querySelector('#form-container #id_short_code').disabled = true;
 
-        editor.setData(room_type.Description)
+        editor.setData(room_type.description)
         editor.setReadOnly(true);
 
-        document.querySelector('#form-container #id_Base_Occupancy').value = room_type.Base_Occupancy;
-        document.querySelector('#form-container #id_Base_Occupancy').disabled = true;
+        document.querySelector('#form-container #id_base_occupancy').value = room_type.base_occupancy;
+        document.querySelector('#form-container #id_base_occupancy').disabled = true;
 
-        document.querySelector('#form-container #id_Max_Occupancy').value = room_type.Max_Occupancy;
-        document.querySelector('#form-container #id_Max_Occupancy').disabled = true;
+        document.querySelector('#form-container #id_max_occupancy').value = room_type.max_occupancy;
+        document.querySelector('#form-container #id_max_occupancy').disabled = true;
 
-        document.querySelector('#form-container #id_Extra_Bed').value = room_type.Extra_Bed;
-        document.querySelector('#form-container #id_Extra_Bed').disabled = true;
+        document.querySelector('#form-container #id_extra_bed').value = room_type.extra_bed;
+        document.querySelector('#form-container #id_extra_bed').disabled = true;
 
-        document.querySelector('#form-container #id_Kids_Occupancy').value = room_type.Kids_Occupancy;
-        document.querySelector('#form-container #id_Kids_Occupancy').disabled = true;
+        document.querySelector('#form-container #id_kids_occupancy').value = room_type.kids_occupancy;
+        document.querySelector('#form-container #id_kids_occupancy').disabled = true;
 
-        document.querySelector('#form-container #id_Amenities').value = room_type.Amenities;
-        document.querySelector('#form-container #id_Amenities').disabled = true;
+        document.querySelectorAll('#id_amenities input').forEach((x = 0) => {
+            x.checked = room_type.amenities.includes(parseInt(x.value));
+            x.disabled = true;
+        })
 
-        document.querySelector('#form-container #id_Base_Price').value = room_type.Base_Price;
-        document.querySelector('#form-container #id_Base_Price').disabled = true;
+        document.querySelector('#form-container #id_base_price').value = room_type.base_price;
+        document.querySelector('#form-container #id_base_price').disabled = true;
 
-        document.querySelector('#form-container #id_Additional_Person_Price').value = room_type.Additional_Person_Price;
-        document.querySelector('#form-container #id_Additional_Person_Price').disabled = true;
+        document.querySelector('#form-container #id_additional_person_price').value = room_type.additional_person_price;
+        document.querySelector('#form-container #id_additional_person_price').disabled = true;
 
-        document.querySelector('#form-container #id_Extra_Bed_Price').value = room_type.Extra_Bed_Price;
-        document.querySelector('#form-container #id_Extra_Bed_Price').disabled = true;
+        document.querySelector('#form-container #id_extra_bed_price').value = room_type.extra_bed_price;
+        document.querySelector('#form-container #id_extra_bed_price').disabled = true;
 
         document.querySelector('#form-container #id_image').disabled = true;
 
-        document.querySelector('form img').src = room_type.Image
+        document.querySelector('form img').src = room_type.image
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -206,29 +209,31 @@ function edit_roomType(pk){
     fetch(`/admin/room_types/info/?pk=${pk}`)
     .then(response => response.json())
     .then(room_type => {
-        document.querySelector('#form-container #id_Title').value = room_type.Title;
+        document.querySelector('#form-container #id_title').value = room_type.title;
 
-        document.querySelector('#form-container #id_Short_Code').value = room_type.Short_Code;
+        document.querySelector('#form-container #id_short_code').value = room_type.short_code;
 
-        editor.setData(room_type.Description)
+        editor.setData(room_type.description)
 
-        document.querySelector('#form-container #id_Base_Occupancy').value = room_type.Base_Occupancy;
+        document.querySelector('#form-container #id_base_occupancy').value = room_type.base_occupancy;
 
-        document.querySelector('#form-container #id_Max_Occupancy').value = room_type.Max_Occupancy;
+        document.querySelector('#form-container #id_max_occupancy').value = room_type.max_occupancy;
 
-        document.querySelector('#form-container #id_Extra_Bed').value = room_type.Extra_Bed;
+        document.querySelector('#form-container #id_extra_bed').value = room_type.extra_bed;
 
-        document.querySelector('#form-container #id_Kids_Occupancy').value = room_type.Kids_Occupancy;
+        document.querySelector('#form-container #id_kids_occupancy').value = room_type.kids_occupancy;
 
-        document.querySelector('#form-container #id_Amenities').value = room_type.Amenities;
+        document.querySelectorAll('#id_amenities input').forEach((x, i = 0) => {
+            x.checked = room_type.amenities.includes(parseInt(x.value));
+        })
 
-        document.querySelector('#form-container #id_Base_Price').value = room_type.Base_Price;
+        document.querySelector('#form-container #id_base_price').value = room_type.base_price;
 
-        document.querySelector('#form-container #id_Additional_Person_Price').value = room_type.Additional_Person_Price;
+        document.querySelector('#form-container #id_additional_person_price').value = room_type.additional_person_price;
 
-        document.querySelector('#form-container #id_Extra_Bed_Price').value = room_type.Extra_Bed_Price;
+        document.querySelector('#form-container #id_extra_bed_price').value = room_type.extra_bed_price;
 
-        document.querySelector('form img').src = room_type.Image
+        document.querySelector('form img').src = room_type.image
     })
 
     const input = document.querySelector('input');
@@ -254,7 +259,7 @@ document.querySelector('form').onsubmit = () =>{
 
 function validation(elem){
     const data = new FormData(elem);
-    data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+    data.append('Description', editor.getData())
     
     fetch(elem.action,{
         method: 'POST',

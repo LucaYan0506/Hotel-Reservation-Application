@@ -101,7 +101,8 @@ tr td:last-child {
   }
 
 
-#form-container form input{
+#form-container form > input, #id_amenities{
+    display: inline-block;
     padding: 5px 10px;
     width: 40%;
     min-width: 450px;
@@ -112,7 +113,7 @@ tr td:last-child {
     vertical-align: top;
 }
 
-#form-container form label{
+#form-container form > label{
     min-width: 200px;
     width: 10%;
     margin-bottom: 5px;
@@ -133,13 +134,13 @@ tr td:last-child {
 }
 
 @media only screen and (max-width: 1400px) {
-    #form-container form input{
+    #form-container form > input, #id_amenities{
         width: calc(100% - 30px);
         min-width: unset;
         max-width: 810px;
         margin-right: 0;
     }
-    #form-container form label{
+    #form-container form > label{
         width: calc(100% - 20px);
         min-width: unset;
         display: block;

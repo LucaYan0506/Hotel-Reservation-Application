@@ -1,67 +1,108 @@
-from dataclasses import field
 from django.db import models
 from django.forms import ModelForm
+from django import forms
 from ckeditor.fields import RichTextField 
 
 # Create your models here.
-class Room_Type(models.Model):
-    Title = models.CharField(max_length=50)
-    Short_Code = models.CharField(max_length=25)
-    Description = RichTextField(blank=True)
-    Base_Occupancy = models.IntegerField()
-    Max_Occupancy = models.IntegerField()
-    Extra_Bed = models.IntegerField()
-    Kids_Occupancy = models.IntegerField()
-    Amenities = models.CharField(max_length=25)
-    Base_Price = models.IntegerField()
-    Additional_Person_Price = models.IntegerField()
-    Extra_Bed_Price = models.IntegerField()
-    image = models.ImageField(blank=True, null=True, upload_to='images/room_types/')
+class Amenity(models.Model):
+    name = models.CharField(max_length=50)
+    description = RichTextField(blank=True)
+    active = models.BooleanField()
+    image = models.ImageField(blank=True, null=True, upload_to='images/amenity/')
+
+    def __str__(self):
+        return self.name
 
     def serialize(self):
         url = ''
         if (self.image):
             url = self.image.url
-
         return {
             'pk': self.pk,
-            'Title': self.Title, 
-            'Short_Code': self.Short_Code,
-            'Description': self.Description,
-            'Base_Occupancy': self.Base_Occupancy,
-            'Max_Occupancy': self.Max_Occupancy,
-            'Extra_Bed' : self.Extra_Bed,
-            'Kids_Occupancy': self.Kids_Occupancy,
-            'Amenities': self.Amenities,
-            'Base_Price': self.Base_Price,
-            'Additional_Person_Price': self.Additional_Person_Price,
-            'Extra_Bed_Price': self.Extra_Bed_Price,
-            'Image': url,
+            'name': self.name,
+            'description': self.description,
+            'active' :self.active,
+            'image' : url,
         }
 
-    def __str__(self):
-        return self.Title
+class AmenityForm(ModelForm):
+    class Meta:
+        model = Amenity
+        fields = '__all__'
 
+
+class Room_Type(models.Model):
+    title = models.CharField(max_length=50)
+    short_code = models.CharField(max_length=25)
+    description = RichTextField(blank=True)
+    base_occupancy = models.IntegerField()
+    max_occupancy = models.IntegerField()
+    extra_bed = models.IntegerField()
+    kids_occupancy = models.IntegerField()
+    amenities = models.ManyToManyField(Amenity, blank=True)
+    base_price = models.IntegerField()
+    additional_person_price = models.IntegerField()
+    extra_bed_price = models.IntegerField()
+    image = models.ImageField(blank=True, null=True, upload_to='images/room_types/')
+
+    def __str__(self):
+        return self.title
+
+    def serialize(self):
+        url = ''
+        if (self.image):
+            url = self.image.url
+        amenities = []
+        if self.amenities.count() != 0:
+            for x in self.amenities.all():
+                if x.active:
+                    amenities.append(x.pk)
+        return {
+            'pk': self.pk,
+            'title': self.title, 
+            'short_code': self.short_code,
+            'description': self.description,
+            'base_occupancy': self.base_occupancy,
+            'max_occupancy': self.max_occupancy,
+            'extra_bed' : self.extra_bed,
+            'kids_occupancy': self.kids_occupancy,
+            'amenities': amenities,
+            'base_price': self.base_price,
+            'additional_person_price': self.additional_person_price,
+            'extra_bed_price': self.extra_bed_price,
+            'image': url,
+        }
+
+def get_my_choices():
+    available_choices = []
+    for x in Amenity.objects.filter(active=True).all():
+        available_choices.append((x.pk,x.name))
+    return available_choices
 
 class Room_TypeForm(ModelForm):
+
+    amenities = forms.MultipleChoiceField(
+        widget= forms.CheckboxSelectMultiple,
+        choices= get_my_choices
+    )
+        
     class Meta:
         model = Room_Type
         fields = '__all__'
 
-
 class Floor(models.Model):
-    Name = models.CharField(max_length=50)
-    Number = models.IntegerField(unique=True)
-    Description = RichTextField(blank=True)
-    Active = models.BooleanField()
+    name = models.CharField(max_length=50)
+    number = models.IntegerField(unique=True)
+    description = RichTextField(blank=True)
+    active = models.BooleanField()
 
     def serialize(self):
         return {
             'pk': self.pk,
-            'Name': self.Name,
-            'Number': self.Number,
-            'Description': self.Description,
-            'Active' :self.Active,
+            'name': self.name,
+            'number': self.number,
+            'description': self.description,
+            'active' :self.active,
         }
 
 class FloorForm(ModelForm):
