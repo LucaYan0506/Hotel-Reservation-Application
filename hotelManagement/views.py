@@ -279,15 +279,14 @@ def delete_amenity(request):
 
 
 def roomView(request):
-    return render(request,'hotelManagement/amenity.html',{
-        'form': AmenityForm(),
+    return render(request,'hotelManagement/room.html',{
+        'form': RoomForm(),
     })
 
 def add_room(request):
     if request.method == 'POST':
-        formset = AmenityForm(request.POST, request.FILES)
+        formset = RoomForm(request.POST)
         if formset.is_valid():
-            formset.active = "active" in request.POST
             formset.save()
             return JsonResponse({
             'Result':'Succeed',
@@ -305,18 +304,18 @@ def add_room(request):
 
 def get_room(request):
     if (request.GET.get('pk')):
-        amenity = Amenity.objects.get(pk = request.GET.get('pk'))
-        return JsonResponse(amenity.serialize(), safe=False)
+        room = Room.objects.get(pk = request.GET.get('pk'))
+        return JsonResponse(room.serialize(), safe=False)
 
 
     start = int(request.GET.get('start') or 1)
     end = int(request.GET.get('end') or start + 4)
 
-    data = Amenity.objects.all()
+    data = Room.objects.all()
 
     #if user want specific room type
     if request.GET.get('contain'):
-        data =  Amenity.objects.filter(Name__icontains=request.GET.get('contain')).all()
+        data =  Room.objects.filter(room_number__icontains=request.GET.get('contain')).all()
 
     #get from start to end posts
     data2 = []
@@ -327,26 +326,20 @@ def get_room(request):
         index += 1
 
     return JsonResponse({
-        'total_amenity':data.count(),
-        'amenity':[x.serialize() for x in data2]
+        'total_room':data.count(),
+        'room':[x.serialize() for x in data2]
         },safe=False)
 
 def update_room(request):
     if request.method == 'POST':
         data = request.POST
-        formset = AmenityForm(request.POST)
-        amenity = Amenity.objects.get(pk = data['pk'])
-        oldImage = amenity.image 
+        formset = RoomForm(request.POST)
+        room = Room.objects.get(pk = data['pk'])
         if formset.is_valid():
-            for key in data:
-                setattr(amenity, key, data[key])
-
-            if 'image' in request.FILES:
-                amenity.image = request.FILES['image']
-            else:
-                amenity.image = oldImage
-            amenity.active = "active" in data
-            amenity.save()
+            room.room_type = Room_Type.objects.get(pk = data['room_type'])
+            room.floor = Floor.objects.get(pk = data['floor'])
+            room.room_number = data['room_number']
+            room.save()
 
             return JsonResponse({'Result':'Succeed',},safe=False)
                         
@@ -360,6 +353,6 @@ def update_room(request):
     return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
 
 def delete_room(request):
-    Amenity.objects.get(pk = request.GET.get('pk')).delete()
+    Room.objects.get(pk = request.GET.get('pk')).delete()
 
-    return HttpResponseRedirect(reverse('amenity'))
+    return HttpResponseRedirect(reverse('room'))

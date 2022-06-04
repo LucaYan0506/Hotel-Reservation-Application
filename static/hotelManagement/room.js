@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () =>{
     show_hideSubMenu(document.querySelector('.menu-option-container#hotel-configuration #menu-option'))
     document.querySelector('.menu-option-container#hotel-configuration #menu-option').style.background = 'rgb(0,95,112)';
-    document.querySelector('.menu-option-container#hotel-configuration #sub-menu #floors').style.color = 'white';
+    document.querySelector('.menu-option-container#hotel-configuration #sub-menu #rooms').style.color = 'white';
     load();
 })
 
@@ -10,37 +10,38 @@ document.querySelector('#search-bar').addEventListener('keypress', e => {
         start = 1;
         load();
     }
-})
+});
 
-document.querySelector('form').onsubmit = () => {
+document.querySelector('form').onsubmit = () =>{
     return validation(document.querySelector('form'));
-}
+};
 
-function show_floorForm(){
+
+function show_roomForm(){
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
 }
 
-function hide_floorForm(){
-    location.reload('/admin/floor/')
+function hide_roomForm(){
+    location.reload('/admin/room/')
 }
 
-function create_row(floor,i){
+function create_row(room,i){
 /*
 <tr>
     <th scope="row">{{row.pk}}</th>
     <td>{{row.Title}}</td>
     <td>{{row.Short_Code}}</td>
     <td>
-        <button class="btn" onclick="view_amenity(1)" style="border:solid 1px gray;">
+        <button class="btn" onclick="view_room(1)" style="border:solid 1px gray;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
             View
         </button>
-        <button class="btn" onclick="edit_amenity(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+        <button class="btn" onclick="edit_room(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
             Edit
         </button>
-        <button class="btn" onclick="delete_amenity(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+        <button class="btn" onclick="delete_room(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
             Delete
         </button>
@@ -54,28 +55,26 @@ function create_row(floor,i){
     th.innerHTML = i;
 
     const td1 = document.createElement('td');
-    td1.innerHTML = floor.name;
+    td1.innerHTML = room.room_number;
+
 
     const td2 = document.createElement('td');
-    td2.innerHTML = floor.number;
-
+    td2.innerHTML = room.room_type;
+   
     const td3 = document.createElement('td');
-    if (floor.active)
-        td3.innerHTML = 'Active';
-    else
-        td3.innerHTML = 'Inactive';
+    td3.innerHTML = room.floor;
 
     const td4 = document.createElement('td');
     td4.innerHTML = `   
-    <button class="btn" onclick="view_amenity(1)" style="border:solid 1px gray;">
-        <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
-        View
+    <button class="btn" onclick="alert('working in progress')" style="background-color: #00b0ee; border-color: #00b0ee;color:white">
+        <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: white;padding-right: 2px;">home</i>
+        Housekeeping
     </button>
-    <button class="btn" onclick="edit_amenity(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+    <button class="btn" onclick="edit_room(${room.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
         Edit
     </button>
-    <button class="btn" onclick="delete_amenity(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+    <button class="btn" onclick="delete_room(${room.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
         Delete
     </button>`;
@@ -105,13 +104,13 @@ function load(){
         document.querySelector('#btn-container').remove()
     let end = start + quantity - 1;
     let contain = document.querySelector('#search-bar').value;
-    //show floor
-    fetch(`/admin/floor/info/?start=${start}&end=${end}&contain=${contain}`)
+    //show room
+    fetch(`/admin/room/info/?start=${start}&end=${end}&contain=${contain}`)
     .then(response => response.json())
     .then(data =>{
         let i = start;
-        data.floor.forEach(floor => {
-           create_row(floor,i++);
+        data.room.forEach(room => {
+           create_row(room,i++);
         });
 
         //increasing start
@@ -141,7 +140,7 @@ function load(){
         nextBtn.onclick = () => {
             load();
         }
-        nextBtn.disabled = start > data.total_floor;
+        nextBtn.disabled = start > data.total_room;
         btn_container.append(nextBtn);
 
         const div_clear = document.createElement('div');
@@ -158,60 +157,17 @@ CKEDITOR.on('instanceReady', function(ev) {
 
     });
   
+function edit_room(pk){
+    show_roomForm();
 
-function view_floor(pk){
-    show_floorForm();
-
-    fetch(`/admin/floor/info/?pk=${pk}`)
+    fetch(`/admin/room/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(floor => {
-        document.querySelector('#form-container #id_name').value = floor.name;
-        document.querySelector('#form-container #id_name').disabled = true;
+    .then(room => {
+        document.querySelector(`#form-container #id_room_type option[value='${room.room_type_pk}']`).selected = true;
 
-        document.querySelector('#form-container #id_number').value = floor.number;
-        document.querySelector('#form-container #id_number').disabled = true;
+        document.querySelector(`#form-container #id_floor option[value='${room.floor_pk}']`).selected = true;
 
-        document.querySelector('#form-container #id_active').checked = floor.active;
-        document.querySelector('#form-container #id_active').disabled = true;
-
-        editor.setData(floor.description)
-        editor.setReadOnly(true);
-
-    })
-    
-    document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
-
-    const a = document.createElement('button')
-    a.className = 'btn'
-    a.style=`
-        margin: 0 auto;
-        display: block;
-        width: 50%;
-        margin: 0 auto;
-        display: block;
-        background-color: #dc3545; 
-        border-color: #dc3545;
-        color: white;`
-    a.innerHTML = 'Close'
-    a.onclick = () =>{
-        location.reload();
-    }
-    document.querySelector('#form-container').append(a)
-}
-
-function edit_floor(pk){
-    show_floorForm();
-
-    fetch(`/admin/floor/info/?pk=${pk}`)
-    .then(response => response.json())
-    .then(floor => {
-        document.querySelector('#form-container #id_name').value = floor.name;
-
-        document.querySelector('#form-container #id_number').value = floor.number;
-
-        document.querySelector('#form-container #id_active').checked = floor.active;
-
-        editor.setData(floor.description)
+        document.querySelector('#form-container #id_room_number').value = room.room_number;
     })
 
     const input = document.querySelector('input');
@@ -220,14 +176,14 @@ function edit_floor(pk){
     input.id = 'id_pk';
     input.name = 'pk';
     document.querySelector('form').append(input);
-    document.querySelector('form').action = "/admin/floor/update/"
+    document.querySelector('form').action = "/admin/room/update/"
 
 }
 
-function delete_floor(pk){
-    if (confirm('Are you sure to delete this floor and all rooms in this floor?')){
+function delete_room(pk){
+    if (confirm('Are you sure to delete this room?')){
         fetch()
-        window.location.replace(`/admin/floor/delete/?pk=${pk}`)
+        window.location.replace(`/admin/room/delete/?pk=${pk}`)
     }
 }
 
@@ -235,20 +191,19 @@ function delete_floor(pk){
 
 function validation(elem){
     const data = new FormData(elem);
-    data.append('Description', editor.getData())
-    data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+    
     fetch(elem.action,{
         method: 'POST',
-        header: {  
+        header: {
             'Content-Type': "multipart/form-data",
-        }, 
+        },
         body: data,
         credentials: 'same-origin',
     })
     .then(response => response.json())
     .then(message => {
         if (message.Result == 'Succeed')
-            location.reload('/admin/floor/')
+            location.reload('/admin/room/')
         else{
             alert(message.Result)
 
@@ -262,6 +217,5 @@ function validation(elem){
             }
         }
     })
-    
     return false;
 }

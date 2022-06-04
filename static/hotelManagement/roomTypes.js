@@ -265,7 +265,7 @@ function edit_roomType(pk){
 }
 
 function delete_roomType(pk){
-    if (confirm('Are you sure to delete this Room Type?')){
+    if (confirm('Are you sure to delete this Room Type and all rooms with this Roome Type?')){
         fetch()
         window.location.replace(`/admin/room_types/delete/?pk=${pk}`)
     }

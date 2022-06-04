@@ -30,7 +30,6 @@ class AmenityForm(ModelForm):
         model = Amenity
         fields = '__all__'
 
-
 class Room_Type(models.Model):
     title = models.CharField(max_length=50)
     short_code = models.CharField(max_length=25)
@@ -96,6 +95,9 @@ class Floor(models.Model):
     description = RichTextField(blank=True)
     active = models.BooleanField()
 
+    def __str__(self):
+        return f'{self.number} - {self.name}'
+
     def serialize(self):
         return {
             'pk': self.pk,
@@ -108,4 +110,24 @@ class Floor(models.Model):
 class FloorForm(ModelForm):
     class Meta:
         model = Floor
+        fields = '__all__'
+
+class Room(models.Model):
+    room_type = models.ForeignKey(Room_Type, on_delete=models.CASCADE)
+    floor = models.ForeignKey(Floor,on_delete=models.CASCADE)
+    room_number = models.IntegerField(unique=True)
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'room_type': self.room_type.title,
+            'room_type_pk': self.room_type.pk,
+            'floor': f'{self.floor.number} - {self.floor.name}',
+            'floor_pk': self.floor.pk,
+            'room_number': self.room_number,
+        }
+
+class RoomForm(ModelForm):
+    class Meta:
+        model = Room
         fields = '__all__'
