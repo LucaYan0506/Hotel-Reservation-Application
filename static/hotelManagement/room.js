@@ -68,7 +68,7 @@ function create_row(room,i){
     td4.innerHTML = `   
     <button class="btn" onclick="alert('working in progress')" style="background-color: #00b0ee; border-color: #00b0ee;color:white">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: white;padding-right: 2px;">home</i>
-        Housekeeping
+        Assign to
     </button>
     <button class="btn" onclick="edit_room(${room.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>

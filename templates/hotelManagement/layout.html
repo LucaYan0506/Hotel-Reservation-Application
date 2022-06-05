@@ -101,9 +101,18 @@
             </div>
             
             <div class="menu-option-container" id="hr-management">
-                <div id="menu-option">
+                <div id="menu-option" onclick="show_hideSubMenu(this)">
                     <i class="material-icons" style="font-size: 24px; margin:0 5px;">people</i>
                     HR Management
+                    <i class="material-icons" style="position: absolute; right: 15px; font-size: 24px; margin:0 5px;">chevron_left</i>
+                </div>
+                <div id="sub-menu">
+                    <ul>
+                        <li id="room-types"><a href="{% url 'index' %}">Employees</a></li>
+                        <li id="room-types"><a href="{% url 'index' %}">Departments</a></li>
+                        <li id="room-types"><a href="{% url 'index' %}">Positions</a></li>
+                       
+                    </ul>
                 </div>
             </div>
 

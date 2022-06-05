@@ -1,0 +1,24 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'hotelManagement/login.css' %}">
+    <title>Login</title>
+</head>
+<body>
+    <div id="login-container">
+        <h1>Member Login</h1>
+        {% if message %}
+            <p style="font-size: 18px;color: red;">{{message}}</p>
+        {% endif %}
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="User" required='true'>
+            <input type="password" name="password" placeholder="Password" required='true'>
+            <input type="submit">
+        </form>
+    </div>
+</body>
+</html>

@@ -1,9 +1,17 @@
+from dataclasses import field
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.forms import ModelForm
 from django import forms
 from ckeditor.fields import RichTextField 
 
 # Create your models here.
+class Member(AbstractUser):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.username
+
 class Amenity(models.Model):
     name = models.CharField(max_length=50)
     description = RichTextField(blank=True)

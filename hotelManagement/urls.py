@@ -3,6 +3,9 @@ from . import views
 
 urlpatterns = [
     path('',views.indexView, name="index"),
+    path('login/',views.loginView, name="login"),
+    path('logout/',views.logout_view, name="logout"),
+
     path('room_types/',views.room_typeView, name="room_types"),
     path('room_types/form/',views.add_room_type, name="add_room_type"),
     path('room_types/info/',views.get_room_type, name="get_root_type"),

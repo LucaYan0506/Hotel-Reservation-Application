@@ -67,7 +67,7 @@ body{
 
 @keyframes hide-sub-menu{
     0%{
-        height: 290px;
+        height: calc(var(--sub-memu-height) * 1px);
     }
     100%{
         height: 0px;
@@ -77,10 +77,10 @@ body{
 
 @keyframes show-sub-menu{
     0%{
-        height: 0px;
+        height: calc(var(--sub-memu-height-curr)* 1px);
     }
     100%{
-        height: 290px;
+        height: calc(var(--sub-memu-height)* 1px);
     }
 }
 

@@ -1,18 +1,43 @@
 from django.shortcuts import render, reverse
+from django.contrib.auth import login,logout,authenticate
 from django.http import HttpResponse,JsonResponse, HttpResponseRedirect
 from .models import *
 
 # Create your views here.
 
 def indexView(request):
-    return render(request,'hotelManagement/index.html')
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/index.html')
+    
+    return HttpResponseRedirect(reverse('login'))
 
+def loginView(request):
+    if request.method == 'POST':
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
 
+        # Check if authentication successful
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            return render(request, "hotelManagement/login.html", {
+                "message": "Invalid username and/or password."
+            })
+
+    return render(request,'hotelManagement/login.html')
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('login'))
 
 def room_typeView(request):
-    return render(request,'hotelManagement/roomType.html',{
-        'form': Room_TypeForm(),
-    })
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/roomType.html',{
+            'form': Room_TypeForm(),
+        })
+    return HttpResponseRedirect(reverse('login'))
 
 def add_room_type(request):
     if request.method == 'POST':
@@ -98,9 +123,12 @@ def delete_room_type(request):
 
 
 def floorView(request):
-    return render(request,'hotelManagement/floor.html',{
-        'form': FloorForm(),
-    })
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/floor.html',{
+            'form': FloorForm(),
+        })
+
+    return HttpResponseRedirect(reverse('login'))
 
 def add_floor(request):
     if request.method == 'POST':
@@ -191,10 +219,13 @@ def delete_floor(request):
 
 
 def amenityView(request):
-    return render(request,'hotelManagement/amenity.html',{
-        'form': AmenityForm(),
-    })
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/amenity.html',{
+            'form': AmenityForm(),
+        })
 
+    return HttpResponseRedirect(reverse('login'))
+    
 def add_amenity(request):
     if request.method == 'POST':
         formset = AmenityForm(request.POST, request.FILES)
@@ -275,8 +306,6 @@ def delete_amenity(request):
     Amenity.objects.get(pk = request.GET.get('pk')).delete()
 
     return HttpResponseRedirect(reverse('amenity'))
-
-
 
 def roomView(request):
     return render(request,'hotelManagement/room.html',{

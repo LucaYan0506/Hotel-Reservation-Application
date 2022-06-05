@@ -1,0 +1,29 @@
+body{
+    background: radial-gradient(#506bc8, #6c41d0);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center
+}
+
+#login-container{
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 177px 130px 33px 95px;
+}
+
+form input[type='text'], form input[type='password']{
+    display: block;
+    padding:10px;
+    margin:10px 20px;
+    border-radius: 40px;
+    border: none;
+    background-color: #e6e6e6;
+    color: #666;
+    font-size: 18px;
+}

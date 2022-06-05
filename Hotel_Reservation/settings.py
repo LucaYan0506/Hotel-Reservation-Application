@@ -127,6 +127,9 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
+#setting for user
+AUTH_USER_MODEL = 'hotelManagement.Member'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID') 
