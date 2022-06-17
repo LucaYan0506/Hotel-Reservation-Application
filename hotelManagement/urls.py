@@ -29,4 +29,15 @@ urlpatterns = [
     path('room/info/',views.get_room, name="get_room"),
     path('room/update/',views.update_room, name="update_floor"),
     path('room/delete/',views.delete_room, name="delete_floor"),
+
+    path('employees/',views.employeesView, name="employees"),
+    path('employees/form/',views.add_employees, name="add_employees"),
+    path('employees/info/',views.get_employees, name="get_employees"),
+    path('employees/update/',views.update_employees, name="update_floor"),
+    path('employees/delete/',views.delete_employees, name="delete_floor"),
+
+    path('departments/',views.departmentsView, name="departments"),
+
+
+    path('positions/',views.positionsView, name="positions"),
 ]

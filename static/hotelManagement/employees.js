@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () =>{
-    show_hideSubMenu(document.querySelector('.menu-option-container#hotel-configuration #menu-option'))
-    document.querySelector('.menu-option-container#hotel-configuration #menu-option').style.background = 'rgb(0,95,112)';
-    document.querySelector('.menu-option-container#hotel-configuration #sub-menu #room-types').style.color = 'white';
+    show_hideSubMenu(document.querySelector('.menu-option-container#hr-management #menu-option'))
+    document.querySelector('.menu-option-container#hr-management #menu-option').style.background = 'rgb(0,95,112)';
+    document.querySelector('.menu-option-container#hr-management #sub-menu #employees').style.color = 'white';
     load();
 })
 
@@ -10,7 +10,11 @@ document.querySelector('#search-bar').addEventListener('keypress', e => {
         start = 1;
         load();
     }
-})
+});
+
+document.querySelector('form').onsubmit = () =>{
+    return validation(document.querySelector('form'));
+};
 
 document.querySelector('#form-container #id_image').addEventListener('change', () =>{
     const [file] = document.querySelector('#form-container #id_image').files
@@ -19,31 +23,32 @@ document.querySelector('#form-container #id_image').addEventListener('change', (
     }
 })
 
-function show_roomTypesForm(){
+
+function show_amenityForm(){
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
 }
 
-function hide_roomTypesForm(){
-    location.reload('/admin/room_types/')
+function hide_amenityForm(){
+    location.reload('/admin/amenity/')
 }
 
-function create_row(room_type,i){
+function create_row(amenity,i){
 /*
 <tr>
     <th scope="row">{{row.pk}}</th>
     <td>{{row.Title}}</td>
     <td>{{row.Short_Code}}</td>
-    <td> 
-        <button class="btn" onclick="view_roomType(1)" style="border:solid 1px gray;">
+    <td>
+        <button class="btn" onclick="view_amenity(1)" style="border:solid 1px gray;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
             View
         </button>
-        <button class="btn" onclick="view_roomType(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+        <button class="btn" onclick="edit_amenity(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
             Edit
         </button>
-        <button class="btn" onclick="view_roomType(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+        <button class="btn" onclick="delete_amenity(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
             Delete
         </button>
@@ -57,22 +62,26 @@ function create_row(room_type,i){
     th.innerHTML = i;
 
     const td1 = document.createElement('td');
-    td1.innerHTML = room_type.title;
+    td1.innerHTML = amenity.name;
+
 
     const td2 = document.createElement('td');
-    td2.innerHTML = room_type.short_code;
+    if (amenity.active)
+        td2.innerHTML = 'Active';
+    else
+        td2.innerHTML = 'Inactive';
 
     const td3 = document.createElement('td');
     td3.innerHTML = `   
-    <button class="btn" onclick="view_roomType(1)" style="border:solid 1px gray;">
+    <button class="btn" onclick="view_amenity(${amenity.pk})" style="border:solid 1px gray;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
         View
     </button>
-    <button class="btn" onclick="view_roomType(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+    <button class="btn" onclick="edit_amenity(${amenity.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
         Edit
     </button>
-    <button class="btn" onclick="view_roomType(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+    <button class="btn" onclick="delete_amenity(${amenity.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
         Delete
     </button>`;
@@ -101,13 +110,13 @@ function load(){
         document.querySelector('#btn-container').remove()
     let end = start + quantity - 1;
     let contain = document.querySelector('#search-bar').value;
-    //show room types
-    fetch(`/admin/room_types/info/?start=${start}&end=${end}&contain=${contain}`)
+    //show amenity
+    fetch(`/admin/amenity/info/?start=${start}&end=${end}&contain=${contain}`)
     .then(response => response.json())
     .then(data =>{
         let i = start;
-        data.room_type.forEach(room_type => {
-           create_row(room_type,i++);
+        data.amenity.forEach(amenity => {
+           create_row(amenity,i++);
         });
 
         //increasing start
@@ -137,7 +146,7 @@ function load(){
         nextBtn.onclick = () => {
             load();
         }
-        nextBtn.disabled = start > data.total_room_type;
+        nextBtn.disabled = start > data.total_amenity;
         btn_container.append(nextBtn);
 
         const div_clear = document.createElement('div');
@@ -154,51 +163,24 @@ CKEDITOR.on('instanceReady', function(ev) {
 
     });
   
-function view_roomType(pk){
-    show_roomTypesForm();
 
-    fetch(`/admin/room_types/info/?pk=${pk}`)
+function view_amenity(pk){
+    show_amenityForm();
+
+    fetch(`/admin/amenity/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(room_type => {
-        console.log(room_type)
-        document.querySelector('#form-container #id_title').value = room_type.title;
-        document.querySelector('#form-container #id_title').disabled = true;
+    .then(amenity => {
+        document.querySelector('#form-container #id_name').value = amenity.name;
+        document.querySelector('#form-container #id_name').disabled = true;
 
-        document.querySelector('#form-container #id_short_code').value = room_type.short_code;
-        document.querySelector('#form-container #id_short_code').disabled = true;
+        document.querySelector('#form-container #id_active').checked = amenity.active;
+        document.querySelector('#form-container #id_active').disabled = true;
 
-        editor.setData(room_type.description)
+        editor.setData(amenity.description)
         editor.setReadOnly(true);
 
-        document.querySelector('#form-container #id_base_occupancy').value = room_type.base_occupancy;
-        document.querySelector('#form-container #id_base_occupancy').disabled = true;
-
-        document.querySelector('#form-container #id_max_occupancy').value = room_type.max_occupancy;
-        document.querySelector('#form-container #id_max_occupancy').disabled = true;
-
-        document.querySelector('#form-container #id_extra_bed').value = room_type.extra_bed;
-        document.querySelector('#form-container #id_extra_bed').disabled = true;
-
-        document.querySelector('#form-container #id_kids_occupancy').value = room_type.kids_occupancy;
-        document.querySelector('#form-container #id_kids_occupancy').disabled = true;
-
-        document.querySelectorAll('#id_amenities input').forEach((x = 0) => {
-            x.checked = room_type.amenities.includes(parseInt(x.value));
-            x.disabled = true;
-        })
-
-        document.querySelector('#form-container #id_base_price').value = room_type.base_price;
-        document.querySelector('#form-container #id_base_price').disabled = true;
-
-        document.querySelector('#form-container #id_additional_person_price').value = room_type.additional_person_price;
-        document.querySelector('#form-container #id_additional_person_price').disabled = true;
-
-        document.querySelector('#form-container #id_extra_bed_price').value = room_type.extra_bed_price;
-        document.querySelector('#form-container #id_extra_bed_price').disabled = true;
-
+        document.querySelector('#form-container img').src = amenity.image;
         document.querySelector('#form-container #id_image').disabled = true;
-
-        document.querySelector('form img').src = room_type.image
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -221,37 +203,19 @@ function view_roomType(pk){
     document.querySelector('#form-container').append(a)
 }
 
-function edit_roomType(pk){
-    show_roomTypesForm();
+function edit_amenity(pk){
+    show_amenityForm();
 
-    fetch(`/admin/room_types/info/?pk=${pk}`)
+    fetch(`/admin/amenity/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(room_type => {
-        document.querySelector('#form-container #id_title').value = room_type.title;
+    .then(amenity => {
+        document.querySelector('#form-container #id_name').value = amenity.name;
 
-        document.querySelector('#form-container #id_short_code').value = room_type.short_code;
+        document.querySelector('#form-container #id_active').checked = amenity.active;
 
-        editor.setData(room_type.description)
+        editor.setData(amenity.description)
 
-        document.querySelector('#form-container #id_base_occupancy').value = room_type.base_occupancy;
-
-        document.querySelector('#form-container #id_max_occupancy').value = room_type.max_occupancy;
-
-        document.querySelector('#form-container #id_extra_bed').value = room_type.extra_bed;
-
-        document.querySelector('#form-container #id_kids_occupancy').value = room_type.kids_occupancy;
-
-        document.querySelectorAll('#id_amenities input').forEach((x, i = 0) => {
-            x.checked = room_type.amenities.includes(parseInt(x.value));
-        })
-
-        document.querySelector('#form-container #id_base_price').value = room_type.base_price;
-
-        document.querySelector('#form-container #id_additional_person_price').value = room_type.additional_person_price;
-
-        document.querySelector('#form-container #id_extra_bed_price').value = room_type.extra_bed_price;
-
-        document.querySelector('form img').src = room_type.image
+        document.querySelector('#form-container img').src = amenity.image;
     })
 
     const input = document.querySelector('input');
@@ -260,20 +224,18 @@ function edit_roomType(pk){
     input.id = 'id_pk';
     input.name = 'pk';
     document.querySelector('form').append(input);
-    document.querySelector('form').action = "/admin/room_types/update/"
+    document.querySelector('form').action = "/admin/amenity/update/"
 
 }
 
-function delete_roomType(pk){
-    if (confirm('Are you sure to delete this Room Type and all rooms with this Roome Type?')){
+function delete_amenity(pk){
+    if (confirm('Are you sure to delete this amenity?')){
         fetch()
-        window.location.replace(`/admin/room_types/delete/?pk=${pk}`)
+        window.location.replace(`/admin/amenity/delete/?pk=${pk}`)
     }
 }
 
-document.querySelector('form').onsubmit = () =>{
-    return validation(document.querySelector('form'));
-}
+
 
 function validation(elem){
     const data = new FormData(elem);
@@ -281,16 +243,16 @@ function validation(elem){
     
     fetch(elem.action,{
         method: 'POST',
-        header: {  
+        header: {
             'Content-Type': "multipart/form-data",
-        }, 
+        },
         body: data,
         credentials: 'same-origin',
     })
     .then(response => response.json())
     .then(message => {
         if (message.Result == 'Succeed')
-            location.reload('/admin/room_types/')
+            location.reload('/admin/amenity/')
         else{
             alert(message.Result)
 
@@ -304,6 +266,5 @@ function validation(elem){
             }
         }
     })
-
     return false;
 }

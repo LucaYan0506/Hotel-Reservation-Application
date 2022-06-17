@@ -308,9 +308,12 @@ def delete_amenity(request):
     return HttpResponseRedirect(reverse('amenity'))
 
 def roomView(request):
-    return render(request,'hotelManagement/room.html',{
-        'form': RoomForm(),
-    })
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/room.html',{
+            'form': RoomForm(),
+        })
+
+    return HttpResponseRedirect(reverse('login'))
 
 def add_room(request):
     if request.method == 'POST':
@@ -385,3 +388,92 @@ def delete_room(request):
     Room.objects.get(pk = request.GET.get('pk')).delete()
 
     return HttpResponseRedirect(reverse('room'))
+
+
+def employeesView(request):
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/employees.html',{
+            'form': RoomForm(),
+        })
+
+    return HttpResponseRedirect(reverse('login'))
+
+def add_employees(request):
+    if request.method == 'POST':
+        formset = RoomForm(request.POST)
+        if formset.is_valid():
+            formset.save()
+            return JsonResponse({
+            'Result':'Succeed',
+            },
+            safe=False)
+
+        
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+
+    return HttpResponse('Make sure that you send a post request')
+
+def get_employees(request):
+    if (request.GET.get('pk')):
+        room = Room.objects.get(pk = request.GET.get('pk'))
+        return JsonResponse(room.serialize(), safe=False)
+
+
+    start = int(request.GET.get('start') or 1)
+    end = int(request.GET.get('end') or start + 4)
+
+    data = Room.objects.all()
+
+    #if user want specific room type
+    if request.GET.get('contain'):
+        data =  Room.objects.filter(room_number__icontains=request.GET.get('contain')).all()
+
+    #get from start to end posts
+    data2 = []
+    index = 1
+    for x in data:
+        if index >= start  and index <= end:
+            data2.append(x)
+        index += 1
+
+    return JsonResponse({
+        'total_room':data.count(),
+        'room':[x.serialize() for x in data2]
+        },safe=False)
+
+def update_employees(request):
+    if request.method == 'POST':
+        data = request.POST
+        formset = RoomForm(request.POST)
+        room = Room.objects.get(pk = data['pk'])
+        if formset.is_valid():
+            room.room_type = Room_Type.objects.get(pk = data['room_type'])
+            room.floor = Floor.objects.get(pk = data['floor'])
+            room.room_number = data['room_number']
+            room.save()
+
+            return JsonResponse({'Result':'Succeed',},safe=False)
+                        
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+        
+
+    return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
+
+def delete_employees(request):
+    Room.objects.get(pk = request.GET.get('pk')).delete()
+
+    return HttpResponseRedirect(reverse('room'))
+
+def departmentsView(request):
+    pass
+
+def positionsView(request):
+    pass
