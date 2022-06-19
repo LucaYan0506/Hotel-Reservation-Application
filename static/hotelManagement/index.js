@@ -13,16 +13,20 @@ function show_hideMenu(){
 
 
 function show_hideSubMenu(elem){
+    var icon = elem.querySelectorAll('i')[1];
+    elem = elem.parentElement.querySelector('#sub-menu');
+    elem.parentElement.querySelector('#menu-option').style.background = 'rgb(0,95,112)';
+
     //if another submenu is open, close it 
     document.querySelectorAll('#sub-menu.show').forEach( el => {
-        el.parentElement.querySelector('#menu-option').style.background = ''
-        el.className = '';
+        if (el != elem){
+            console.log(el)
+            el.parentElement.querySelector('#menu-option').style.background = ''
+            el.className = '';
+        }
     })
 
-    var icon = elem.querySelectorAll('i')[1]
-    elem = elem.parentElement.querySelector('#sub-menu')
-    elem.parentElement.querySelector('#menu-option').style.background = 'rgb(0,95,112)'
-
+    //get total height of elem
     let sub_memu_height = 0;
     elem.querySelectorAll('li').forEach( x => {
         sub_memu_height += x.clientHeight;
@@ -35,8 +39,9 @@ function show_hideSubMenu(elem){
         icon.innerHTML = "keyboard_arrow_down"
     }
     else{
-        document.documentElement.style.setProperty('--sub-memu-height', Math.min(sub_memu_height,elem.clientHeight));
+        document.documentElement.style.setProperty('--sub-memu-height-curr', Math.min(sub_memu_height,elem.clientHeight));
         elem.className = "hide";
+        elem.parentElement.querySelector('#menu-option').style.background = ''
         icon.innerHTML = "chevron_left"
     }
 }

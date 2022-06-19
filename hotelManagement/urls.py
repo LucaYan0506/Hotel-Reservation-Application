@@ -37,7 +37,14 @@ urlpatterns = [
     path('employees/delete/',views.delete_employees, name="delete_floor"),
 
     path('departments/',views.departmentsView, name="departments"),
-
+    path('departments/form/',views.add_departments, name="add_departments"),
+    path('departments/info/',views.get_departments, name="get_departments"),
+    path('departments/update/',views.update_departments, name="update_floor"),
+    path('departments/delete/',views.delete_departments, name="delete_floor"),
 
     path('positions/',views.positionsView, name="positions"),
+    path('positions/form/',views.add_positions, name="add_positions"),
+    path('positions/info/',views.get_positions, name="get_positions"),
+    path('positions/update/',views.update_positions, name="update_floor"),
+    path('positions/delete/',views.delete_positions, name="delete_floor"),
 ]

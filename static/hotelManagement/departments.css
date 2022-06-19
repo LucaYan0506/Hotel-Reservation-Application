@@ -74,7 +74,7 @@ tr td:last-child {
     margin-right: 5px;
 }
 
-#new-employees{
+#new-departments{
     position: absolute;
     right: 5px;
     top: 10px;
@@ -84,7 +84,7 @@ tr td:last-child {
 }
 
 @media only screen and (max-width: 750px) {
-    .btn#new-amenity{
+    .btn#new-departments{
         position: initial;
         margin-bottom: 5px;
     }
@@ -101,7 +101,7 @@ tr td:last-child {
   }
 
 
-#form-container form input, #form-container form select, #form-container form textarea{
+#form-container form input{
     padding: 5px 10px;
     width: 40%;
     min-width: 450px;
@@ -116,10 +116,6 @@ tr td:last-child {
     width: 15px;
     min-width: unset;
     margin-right: calc(100% - 25px - max(10%, 200px));
-}
-
-#form-container form .helptext{
-    display: none;
 }
 
 #form-container form label{
@@ -143,7 +139,7 @@ tr td:last-child {
 }
 
 @media only screen and (max-width: 1400px) {
-    #form-container form input, #form-container form select, #form-container form textarea{
+    #form-container form input{
         width: calc(100% - 30px);
         min-width: unset;
         max-width: 810px;

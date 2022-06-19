@@ -24,31 +24,31 @@ document.querySelector('#form-container #id_image').addEventListener('change', (
 })
 
 
-function show_amenityForm(){
+function show_employeesForm(){
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
 }
 
-function hide_amenityForm(){
-    location.reload('/admin/amenity/')
+function hide_employeesForm(){
+    location.reload('/admin/employees/')
 }
 
-function create_row(amenity,i){
+function create_row(employees,i){
 /*
 <tr>
     <th scope="row">{{row.pk}}</th>
     <td>{{row.Title}}</td>
     <td>{{row.Short_Code}}</td>
     <td>
-        <button class="btn" onclick="view_amenity(1)" style="border:solid 1px gray;">
+        <button class="btn" onclick="view_employees(1)" style="border:solid 1px gray;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
             View
         </button>
-        <button class="btn" onclick="edit_amenity(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+        <button class="btn" onclick="edit_employees(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
             Edit
         </button>
-        <button class="btn" onclick="delete_amenity(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+        <button class="btn" onclick="delete_employees(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
             Delete
         </button>
@@ -62,26 +62,23 @@ function create_row(amenity,i){
     th.innerHTML = i;
 
     const td1 = document.createElement('td');
-    td1.innerHTML = amenity.name;
+    td1.innerHTML = employees.username;
 
 
     const td2 = document.createElement('td');
-    if (amenity.active)
-        td2.innerHTML = 'Active';
-    else
-        td2.innerHTML = 'Inactive';
+    td2.innerHTML = employees.position.name;
 
     const td3 = document.createElement('td');
     td3.innerHTML = `   
-    <button class="btn" onclick="view_amenity(${amenity.pk})" style="border:solid 1px gray;">
+    <button class="btn" onclick="view_employees(${employees.pk})" style="border:solid 1px gray;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
         View
     </button>
-    <button class="btn" onclick="edit_amenity(${amenity.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+    <button class="btn" onclick="edit_employees(${employees.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
         Edit
     </button>
-    <button class="btn" onclick="delete_amenity(${amenity.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+    <button class="btn" onclick="delete_employees(${employees.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
         Delete
     </button>`;
@@ -110,13 +107,13 @@ function load(){
         document.querySelector('#btn-container').remove()
     let end = start + quantity - 1;
     let contain = document.querySelector('#search-bar').value;
-    //show amenity
-    fetch(`/admin/amenity/info/?start=${start}&end=${end}&contain=${contain}`)
+    //show employees
+    fetch(`/admin/employees/info/?start=${start}&end=${end}&contain=${contain}`)
     .then(response => response.json())
     .then(data =>{
         let i = start;
-        data.amenity.forEach(amenity => {
-           create_row(amenity,i++);
+        data.employees.forEach(employees => {
+           create_row(employees,i++);
         });
 
         //increasing start
@@ -146,7 +143,7 @@ function load(){
         nextBtn.onclick = () => {
             load();
         }
-        nextBtn.disabled = start > data.total_amenity;
+        nextBtn.disabled = start > data.total_employees;
         btn_container.append(nextBtn);
 
         const div_clear = document.createElement('div');
@@ -156,30 +153,62 @@ function load(){
 
 }
 
-// The instanceReady event is fired when an instance of CKEditor 4 has finished
-// its initialization.
-CKEDITOR.on('instanceReady', function(ev) {
-    editor = ev.editor;
 
-    });
-  
+function view_employees(pk){
+    show_employeesForm();
 
-function view_amenity(pk){
-    show_amenityForm();
-
-    fetch(`/admin/amenity/info/?pk=${pk}`)
+    fetch(`/admin/employees/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(amenity => {
-        document.querySelector('#form-container #id_name').value = amenity.name;
-        document.querySelector('#form-container #id_name').disabled = true;
+    .then(employees => {
+        document.querySelector('#form-container #id_title').value = employees.title;
+        document.querySelector('#form-container #id_title').disabled = true;
+        
+        document.querySelector('#form-container #id_gender').value = employees.gender;
+        document.querySelector('#form-container #id_gender').disabled = true;
+        
+        document.querySelector('#form-container #id_first_name').value = employees.first_name;
+        document.querySelector('#form-container #id_first_name').disabled = true;
+        
+        document.querySelector('#form-container #id_last_name').value = employees.last_name;
+        document.querySelector('#form-container #id_last_name').disabled = true;
+        
+        document.querySelector('#form-container #id_username').value = employees.username;
+        document.querySelector('#form-container #id_username').disabled = true;
+        
+        document.querySelector('#form-container #id_email').value = employees.email;
+        document.querySelector('#form-container #id_email').disabled = true;
+        
+        document.querySelector('#form-container #id_password').value = '********************';
+        document.querySelector('#form-container #id_password').disabled = true;
+        
+        document.querySelector('#form-container #id_confirm_password').value = '********************';
+        document.querySelector('#form-container #id_confirm_password').disabled = true;
 
-        document.querySelector('#form-container #id_active').checked = amenity.active;
-        document.querySelector('#form-container #id_active').disabled = true;
+        document.querySelector('#form-container #id_date_of_birth').value = employees.date_of_birth;
+        document.querySelector('#form-container #id_date_of_birth').disabled = true;
+        
+        document.querySelector('#form-container #id_country_calling_code').value = employees.country_calling_code;
+        document.querySelector('#form-container #id_country_calling_code').disabled = true;
 
-        editor.setData(amenity.description)
-        editor.setReadOnly(true);
+        document.querySelector('#form-container #id_phone_number').value = employees.phone_number;
+        document.querySelector('#form-container #id_phone_number').disabled = true;
 
-        document.querySelector('#form-container img').src = amenity.image;
+        document.querySelector('#form-container #id_department').value = employees.department.pk;
+        document.querySelector('#form-container #id_department').disabled = true;
+
+        document.querySelector('#form-container #id_position').value = employees.position.pk;
+        document.querySelector('#form-container #id_position').disabled = true;
+
+        document.querySelector('#form-container #id_country').value = employees.country;
+        document.querySelector('#form-container #id_country').disabled = true;
+
+        document.querySelector('#form-container #id_city').value = employees.city;
+        document.querySelector('#form-container #id_city').disabled = true;
+
+        document.querySelector('#form-container #id_address').value = employees.address;
+        document.querySelector('#form-container #id_address').disabled = true;
+
+        document.querySelector('#form-container img').src = employees.image;
         document.querySelector('#form-container #id_image').disabled = true;
     })
     
@@ -203,19 +232,47 @@ function view_amenity(pk){
     document.querySelector('#form-container').append(a)
 }
 
-function edit_amenity(pk){
-    show_amenityForm();
+function edit_employees(pk){
+    show_employeesForm();
 
-    fetch(`/admin/amenity/info/?pk=${pk}`)
+    fetch(`/admin/employees/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(amenity => {
-        document.querySelector('#form-container #id_name').value = amenity.name;
+    .then(employees => {
+        document.querySelector('#form-container #id_title').value = employees.title;
+        
+        document.querySelector('#form-container #id_gender').value = employees.gender;
+        
+        document.querySelector('#form-container #id_first_name').value = employees.first_name;
+        
+        document.querySelector('#form-container #id_last_name').value = employees.last_name;
+        
+        document.querySelector('#form-container #id_username').value = employees.username;
+        
+        document.querySelector('#form-container #id_email').value = employees.email;
+        
+        document.querySelector('#form-container #id_password').value = '********************';
+        document.querySelector('#form-container #id_password').disabled = true;
+        
+        document.querySelector('#form-container #id_confirm_password').value = '********************';
+        document.querySelector('#form-container #id_confirm_password').disabled = true;
 
-        document.querySelector('#form-container #id_active').checked = amenity.active;
+        document.querySelector('#form-container #id_date_of_birth').value = employees.date_of_birth;
+        
+        document.querySelector('#form-container #id_country_calling_code').value = employees.country_calling_code;
 
-        editor.setData(amenity.description)
+        document.querySelector('#form-container #id_phone_number').value = employees.phone_number;
 
-        document.querySelector('#form-container img').src = amenity.image;
+        document.querySelector('#form-container #id_department').value = employees.department.pk;
+
+        document.querySelector('#form-container #id_position').value = employees.position.pk;
+
+        document.querySelector('#form-container #id_country').value = employees.country;
+
+        document.querySelector('#form-container #id_city').value = employees.city;
+
+        document.querySelector('#form-container #id_address').value = employees.address;
+
+        document.querySelector('#form-container img').src = employees.image;
     })
 
     const input = document.querySelector('input');
@@ -224,17 +281,16 @@ function edit_amenity(pk){
     input.id = 'id_pk';
     input.name = 'pk';
     document.querySelector('form').append(input);
-    document.querySelector('form').action = "/admin/amenity/update/"
+    document.querySelector('form').action = "/admin/employees/update/"
 
 }
 
-function delete_amenity(pk){
-    if (confirm('Are you sure to delete this amenity?')){
+function delete_employees(pk){
+    if (confirm('Are you sure to delete this employees?')){
         fetch()
-        window.location.replace(`/admin/amenity/delete/?pk=${pk}`)
+        window.location.replace(`/admin/employees/delete/?pk=${pk}`)
     }
 }
-
 
 
 function validation(elem){
@@ -252,7 +308,7 @@ function validation(elem){
     .then(response => response.json())
     .then(message => {
         if (message.Result == 'Succeed')
-            location.reload('/admin/amenity/')
+            location.reload('/admin/employees/')
         else{
             alert(message.Result)
 
