@@ -453,7 +453,7 @@ def get_employees(request):
 def update_employees(request):
     if request.method == 'POST':
         data = request.POST
-        formset = EmployeeForm(request.POST)
+        formset = EmployeeForm(data)
         employee = Employee.objects.get(pk = data['pk'])
         if formset.is_valid():
             for key in data:

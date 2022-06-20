@@ -292,10 +292,9 @@ function delete_employees(pk){
     }
 }
 
-
+let data;
 function validation(elem){
-    const data = new FormData(elem);
-    data.append('Description', editor.getData())
+    data = new FormData(elem);
     
     fetch(elem.action,{
         method: 'POST',
