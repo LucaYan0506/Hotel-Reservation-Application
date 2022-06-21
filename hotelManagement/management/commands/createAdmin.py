@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from datetime import datetime
 from hotelManagement.models import Employee,Positions
-Positions.objects.filter(pk = 0)
+
 class Command(BaseCommand):
     help = 'Generate an admin'
 

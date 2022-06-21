@@ -2,6 +2,7 @@ from django.shortcuts import render, reverse
 from django.contrib.auth import login,logout,authenticate
 from django.http import HttpResponse,JsonResponse, HttpResponseRedirect
 from .models import *
+import json
 
 # Create your views here.
 
@@ -455,16 +456,36 @@ def update_employees(request):
         data = request.POST
         formset = EmployeeForm(data)
         employee = Employee.objects.get(pk = data['pk'])
-        if formset.is_valid():
-            for key in data:
-                setattr(employee, key, data[key])
-            employee.save()
+        oldImage = employee.image
+        errors = json.loads(formset.errors.as_json())
 
+        if 'password' in errors and 'confirm_password' in errors and 'username' in errors and data['username'] == employee.username and len(errors) == 3:
+            for key in data:
+                if key == 'password' or key == 'confirm_password':
+                    continue
+                if key == 'department':
+                    employee.department = Departments.objects.get(pk = data[key])
+                    continue
+                if key == 'position':
+                    employee.position = Positions.objects.get(pk = data[key])
+                    continue
+                  
+                setattr(employee, key, data[key])
+
+            if 'image' in request.FILES:
+                employee.image = request.FILES['image']
+            else:
+                employee.image = oldImage
+                
+            employee.save()
             return JsonResponse({'Result':'Succeed',},safe=False)
-                        
+
+        errors.pop('password')
+        errors.pop('confirm_password')
+
         return JsonResponse({
             'Result':'Failed',
-            'error': formset.errors.as_json(),
+            'error': json.dumps(errors),
             },
             safe=False)
         
