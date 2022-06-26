@@ -400,6 +400,7 @@ def employeesView(request):
     if request.user.is_authenticated:
         return render(request,'hotelManagement/employees.html',{
             'form': EmployeeForm(),
+            'user_permissions':User_permission.objects.all()
         })
 
     return HttpResponseRedirect(reverse('login'))
@@ -469,6 +470,11 @@ def update_employees(request):
                 if key == 'position':
                     employee.position = Positions.objects.get(pk = data[key])
                     continue
+                if key == 'user_permission':
+                    employee.user_permission.clear()
+                    for x in data[key]:
+                        employee.user_permission.add(User_permission.objects.get(pk = x))
+                    continue
                   
                 setattr(employee, key, data[key])
 
@@ -495,7 +501,7 @@ def update_employees(request):
 def delete_employees(request):
     Employee.objects.get(pk = request.GET.get('pk')).delete()
 
-    return HttpResponseRedirect(reverse('employee'))
+    return HttpResponseRedirect(reverse('employees'))
 
 
 

@@ -13,7 +13,7 @@ document.querySelector('#search-bar').addEventListener('keypress', e => {
 });
 
 document.querySelector('form').onsubmit = () =>{
-    return validation(document.queamenirySelector('form'));
+    return validation(document.querySelector('form'));
 };
 
 

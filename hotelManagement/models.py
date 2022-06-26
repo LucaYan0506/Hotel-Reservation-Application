@@ -175,6 +175,12 @@ class DepartmentsForm(ModelForm):
         model = Departments
         fields = '__all__'
 
+class User_permission(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
 class Employee(AbstractUser):
     TITLE_CHOICES = (
         ('Mr', 'Mr'),
@@ -670,6 +676,7 @@ class Employee(AbstractUser):
     city = models.CharField(max_length=255)
     address = models.TextField()
     image = models.ImageField(blank=True, null=True, upload_to='images/Employee/')
+    user_permission = models.ManyToManyField(User_permission,blank=True)
 
     def __str__(self):
         return self.username
@@ -681,6 +688,9 @@ class Employee(AbstractUser):
         department = ''
         if self.department:
             department = {'pk' :self.department.pk,'name' :self.department.name,}
+        user_permission = []
+        for x in self.user_permission.all():
+            user_permission.append({'pk': x.pk, 'name': x.name})
 
         return {
             'pk': self.pk,
@@ -699,6 +709,7 @@ class Employee(AbstractUser):
             'city': self.city,
             'address': self.address,
             'image' : url,
+            'user_permission': user_permission,
         }
 
 class EmployeeForm(ModelForm):

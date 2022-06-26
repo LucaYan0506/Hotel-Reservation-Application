@@ -23,6 +23,28 @@ document.querySelector('#form-container #id_image').addEventListener('change', (
     }
 })
 
+//user-permission
+document.querySelectorAll('.user-permission li').forEach(el => {
+    el.onclick = () => {li_click(el)};
+})
+
+function li_click(el){
+    if (el.parentElement.parentElement.id == 'group-1'){
+        const newEl = document.createElement('li');
+        newEl.innerHTML = el.innerHTML;
+        newEl.value = el.value;
+        newEl.onclick = () => {li_click(newEl)};
+        el.parentElement.removeChild(el);
+        document.querySelector('#group-2 ul').appendChild(newEl);
+    }else{
+        const newEl = document.createElement('li');
+        newEl.innerHTML = el.innerHTML;
+        newEl.value = el.value;
+        newEl.onclick = () => {li_click(newEl)};
+        el.parentElement.removeChild(el);
+        document.querySelector('#group-1 ul').appendChild(newEl);
+    }
+}
 
 function show_employeesForm(){
     document.querySelector('#table-container').style.display = 'none';   
@@ -210,6 +232,12 @@ function view_employees(pk){
 
         document.querySelector('#form-container img').src = employees.image;
         document.querySelector('#form-container #id_image').disabled = true;
+
+        document.querySelector('#form-container .user-permission#group-1').style = 'pointer-events: none;'
+        document.querySelector('#form-container .user-permission#group-2').style = 'pointer-events: none;'
+        employees.user_permission.forEach(x => {
+            document.querySelector(`#form-container .user-permission#group-1 ul li[value="${x.pk}"]`).click();
+        })
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -273,6 +301,10 @@ function edit_employees(pk){
         document.querySelector('#form-container #id_address').value = employees.address;
 
         document.querySelector('#form-container img').src = employees.image;
+
+        employees.user_permission.forEach(x => {
+            document.querySelector(`#form-container .user-permission#group-1 ul li[value="${x.pk}"]`).click();
+        })
     })
 
     const input = document.querySelector('input');
@@ -292,10 +324,12 @@ function delete_employees(pk){
     }
 }
 
-let data;
-function validation(elem){
-    data = new FormData(elem);
-    
+function validation(elem){  
+    const data = new FormData(elem);
+    document.querySelectorAll('#form-container .user-permission#group-2 ul li').forEach(x => {
+        data.append('user_permission',x.value)
+    })
+
     fetch(elem.action,{
         method: 'POST',
         header: {

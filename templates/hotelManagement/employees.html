@@ -49,6 +49,24 @@
           {% csrf_token %}
           {{ form }}
           <img src="" style="display:block;margin:10px;width:100%; max-width:200px" onerror="this.error=null;this.src='{% static 'images/no_image.jpg' %}'">
+          <label for="id_user_permission">User permission: <br> 
+            <small style="color: #6c757d;">Click to select user permission</small>
+          </label>
+          <div class="user-permission" id="group-1">
+            Available permission
+            <ul>
+              {% for user_permission in user_permissions %}
+                <li value={{ user_permission.pk }}>{{ user_permission.name }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="user-permission" id="group-2">
+            Selected permission
+            <ul>
+
+            </ul>
+          </div>
+          <div style="clear:both"></div>
           <button class="btn" style=" color: #fff;background-color: #28a745;border-color: #28a745;float: right; width: calc(50% - 10px);">Add</button>
         </form>
         <button onclick="hide_employeesForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
