@@ -716,3 +716,24 @@ class EmployeeForm(ModelForm):
     class Meta:
         model = Employee
         fields = ['title','gender','first_name','last_name','username','email','password','confirm_password','date_of_birth','country_calling_code','phone_number', 'department', 'position', 'country', 'city', 'address', 'image']
+
+class Housekeeping(models.Model):
+    name = models.CharField(max_length=255)
+    description = RichTextField(blank=True)
+    active = models.BooleanField()
+    
+    def __str__(self):
+        return self.name
+    
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'name': self.name,
+            'description': self.description,
+            'active': self.active,
+        }
+
+class HousekeepingForm(ModelForm):
+    class Meta:
+        model = Housekeeping
+        fields = '__all__'

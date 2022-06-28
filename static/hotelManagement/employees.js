@@ -326,9 +326,11 @@ function delete_employees(pk){
 
 function validation(elem){  
     const data = new FormData(elem);
+    let list = '';
     document.querySelectorAll('#form-container .user-permission#group-2 ul li').forEach(x => {
-        data.append('user_permission',x.value)
+        list += x.value;
     })
+    data.append('user_permission',list)
 
     fetch(elem.action,{
         method: 'POST',

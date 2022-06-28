@@ -1,3 +1,5 @@
+let start = 1;
+
 document.addEventListener('DOMContentLoaded', () =>{
     show_hideSubMenu(document.querySelector('.menu-option-container#hotel-configuration #menu-option'))
     document.querySelector('.menu-option-container#hotel-configuration #menu-option').style.background = 'rgb(0,95,112)';
@@ -16,39 +18,32 @@ document.querySelector('form').onsubmit = () =>{
     return validation(document.querySelector('form'));
 };
 
-document.querySelector('#form-container #id_image').addEventListener('change', () =>{
-    const [file] = document.querySelector('#form-container #id_image').files
-    if (file) {
-        document.querySelector('form img').src =  URL.createObjectURL(file)
-    }
-})
 
-
-function show_housekeepingForm(){
+function show_housekeepingStatusForm(){
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
 }
 
-function hide_housekeepingForm(){
-    location.reload('/admin/housekeeping/')
+function hide_housekeepingStatusForm(){
+    location.reload('/admin/housekeepingStatus/')
 }
 
-function create_row(housekeeping,i){
+function create_row(housekeepingStatus,i){
 /*
 <tr>
     <th scope="row">{{row.pk}}</th>
     <td>{{row.Title}}</td>
     <td>{{row.Short_Code}}</td>
     <td>
-        <button class="btn" onclick="view_housekeeping(1)" style="border:solid 1px gray;">
+        <button class="btn" onclick="view_housekeepingStatus(1)" style="border:solid 1px gray;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
             View
         </button>
-        <button class="btn" onclick="edit_housekeeping(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+        <button class="btn" onclick="edit_housekeepingStatus(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
             Edit
         </button>
-        <button class="btn" onclick="delete_housekeeping(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+        <button class="btn" onclick="delete_housekeepingStatus(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
             Delete
         </button>
@@ -62,26 +57,26 @@ function create_row(housekeeping,i){
     th.innerHTML = i;
 
     const td1 = document.createElement('td');
-    td1.innerHTML = housekeeping.name;
+    td1.innerHTML = housekeepingStatus.name;
 
 
     const td2 = document.createElement('td');
-    if (housekeeping.active)
+    if (housekeepingStatus.active)
         td2.innerHTML = 'Active';
     else
         td2.innerHTML = 'Inactive';
 
     const td3 = document.createElement('td');
     td3.innerHTML = `   
-    <button class="btn" onclick="view_housekeeping(${housekeeping.pk})" style="border:solid 1px gray;">
+    <button class="btn" onclick="view_housekeepingStatus(${housekeepingStatus.pk})" style="border:solid 1px gray;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
         View
     </button>
-    <button class="btn" onclick="edit_housekeeping(${housekeeping.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+    <button class="btn" onclick="edit_housekeepingStatus(${housekeepingStatus.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
         Edit
     </button>
-    <button class="btn" onclick="delete_housekeeping(${housekeeping.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+    <button class="btn" onclick="delete_housekeepingStatus(${housekeepingStatus.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
         Delete
     </button>`;
@@ -93,8 +88,6 @@ function create_row(housekeeping,i){
 
     document.querySelector('.table tbody').append(tr);
 }
-
-let start = 1;
 
 function load(){
     let quantity = parseInt(document.querySelector('select').value);
@@ -110,13 +103,13 @@ function load(){
         document.querySelector('#btn-container').remove()
     let end = start + quantity - 1;
     let contain = document.querySelector('#search-bar').value;
-    //show housekeeping
-    fetch(`/admin/housekeeping/info/?start=${start}&end=${end}&contain=${contain}`)
+    //show housekeepingStatus
+    fetch(`/admin/housekeepingStatus/info/?start=${start}&end=${end}&contain=${contain}`)
     .then(response => response.json())
     .then(data =>{
         let i = start;
-        data.housekeeping.forEach(housekeeping => {
-           create_row(housekeeping,i++);
+        data.housekeepingStatus.forEach(housekeepingStatus => {
+           create_row(housekeepingStatus,i++);
         });
 
         //increasing start
@@ -146,7 +139,7 @@ function load(){
         nextBtn.onclick = () => {
             load();
         }
-        nextBtn.disabled = start > data.total_housekeeping;
+        nextBtn.disabled = start > data.total_housekeepingStatus;
         btn_container.append(nextBtn);
 
         const div_clear = document.createElement('div');
@@ -164,23 +157,20 @@ CKEDITOR.on('instanceReady', function(ev) {
     });
   
 
-function view_housekeeping(pk){
-    show_housekeepingForm();
+function view_housekeepingStatus(pk){
+    show_housekeepingStatusForm();
 
-    fetch(`/admin/housekeeping/info/?pk=${pk}`)
+    fetch(`/admin/housekeepingStatus/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(housekeeping => {
-        document.querySelector('#form-container #id_name').value = housekeeping.name;
+    .then(housekeepingStatus => {
+        document.querySelector('#form-container #id_name').value = housekeepingStatus.name;
         document.querySelector('#form-container #id_name').disabled = true;
 
-        document.querySelector('#form-container #id_active').checked = housekeeping.active;
+        document.querySelector('#form-container #id_active').checked = housekeepingStatus.active;
         document.querySelector('#form-container #id_active').disabled = true;
 
-        editor.setData(housekeeping.description)
+        editor.setData(housekeepingStatus.description)
         editor.setReadOnly(true);
-
-        document.querySelector('#form-container img').src = housekeeping.image;
-        document.querySelector('#form-container #id_image').disabled = true;
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -203,19 +193,17 @@ function view_housekeeping(pk){
     document.querySelector('#form-container').append(a)
 }
 
-function edit_housekeeping(pk){
-    show_housekeepingForm();
+function edit_housekeepingStatus(pk){
+    show_housekeepingStatusForm();
 
-    fetch(`/admin/housekeeping/info/?pk=${pk}`)
+    fetch(`/admin/housekeepingStatus/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(housekeeping => {
-        document.querySelector('#form-container #id_name').value = housekeeping.name;
+    .then(housekeepingStatus => {
+        document.querySelector('#form-container #id_name').value = housekeepingStatus.name;
 
-        document.querySelector('#form-container #id_active').checked = housekeeping.active;
+        document.querySelector('#form-container #id_active').checked = housekeepingStatus.active;
 
-        editor.setData(housekeeping.description)
-
-        document.querySelector('#form-container img').src = housekeeping.image;
+        editor.setData(housekeepingStatus.description)
     })
 
     const input = document.querySelector('input');
@@ -224,23 +212,21 @@ function edit_housekeeping(pk){
     input.id = 'id_pk';
     input.name = 'pk';
     document.querySelector('form').append(input);
-    document.querySelector('form').action = "/admin/housekeeping/update/"
+    document.querySelector('form').action = "/admin/housekeepingStatus/update/"
 
 }
 
-function delete_housekeeping(pk){
-    if (confirm('Are you sure to delete this housekeeping?')){
+function delete_housekeepingStatus(pk){
+    if (confirm('Are you sure to delete this housekeepingStatus?')){
         fetch()
-        window.location.replace(`/admin/housekeeping/delete/?pk=${pk}`)
+        window.location.replace(`/admin/housekeepingStatus/delete/?pk=${pk}`)
     }
 }
 
-
-
 function validation(elem){
     const data = new FormData(elem);
-    data.append('Description', editor.getData())
-    
+    data.append('description', editor.getData())
+
     fetch(elem.action,{
         method: 'POST',
         header: {

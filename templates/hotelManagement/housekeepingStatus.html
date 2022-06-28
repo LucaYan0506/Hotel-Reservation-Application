@@ -2,15 +2,15 @@
 {% load static %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'hotelManagement/housekeeping.css' %}">
+    <link rel="stylesheet" href="{% static 'hotelManagement/housekeepingStatus.css' %}">
 {% endblock head %}
 
 {% block body %}
-    <h1>Housekeeping</h1>
+    <h1>Housekeeping Status</h1>
 
     <div id="table-container">
-        <p style="padding:0;margin-top:0;">Housekeeping</p>
-        <button onclick="show_housekeepingForm()" class="btn" id="new-housekeeping"><b>+ </b>Add</button>
+        <p style="padding:0;margin-top:0;">Housekeeping Status</p>
+        <button onclick="show_housekeepingStatusForm()" class="btn" id="new-housekeepingStatus"><b>+ </b>Add</button>
         <div style="clear: both;"></div>
         <div id="search-bar-container">
             Search:
@@ -45,16 +45,15 @@
     </div>
 
     <div id="form-container" style="font-size:18px;display: none;">
-        <form action="/admin/housekeeping/form/" method="POST">
+        <form action="/admin/housekeepingStatus/form/" method="POST">
           {% csrf_token %}
           {{ form }}
-          <img src="" style="display:block;margin:10px;width:100%; max-width:500px" onerror="this.error=null;this.src='{% static 'images/no_image.jpg' %}'">
           <button class="btn" style=" color: #fff;background-color: #28a745;border-color: #28a745;float: right; width: calc(50% - 10px);;">Add</button>
         </form>
-        <button onclick="hide_housekeepingForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
+        <button onclick="hide_housekeepingStatusForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
     </div>
 
     <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
     <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
-    <script type="text/javascript" src="{% static "hotelManagement/housekeeping.js" %}"></script>
+    <script type="text/javascript" src="{% static "hotelManagement/housekeepingStatus.js" %}"></script>
 {% endblock body %}

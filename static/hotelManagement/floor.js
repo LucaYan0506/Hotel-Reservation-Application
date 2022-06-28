@@ -235,7 +235,7 @@ function delete_floor(pk){
 
 function validation(elem){
     const data = new FormData(elem);
-    data.append('Description', editor.getData())
+    data.append('description', editor.getData())
     data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
     fetch(elem.action,{
         method: 'POST',

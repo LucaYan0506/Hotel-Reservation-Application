@@ -25,7 +25,7 @@ urlpatterns = [
     path('amenity/delete/',views.delete_amenity, name="delete_amenity"),
 
     path('room/',views.roomView, name="room"),
-    #path('room/housekeeping',views.roomView, name="room"),
+    path('room/<int:id>',views.room_housekeepingView, name="room"),
     path('room/form/',views.add_room, name="add_room"),
     path('room/info/',views.get_room, name="get_room"),
     path('room/update/',views.update_room, name="update_room"),
@@ -49,9 +49,9 @@ urlpatterns = [
     path('positions/update/',views.update_positions, name="update_positions"),
     path('positions/delete/',views.delete_positions, name="delete_positions"),
 
-    path('housekeeping/',views.housekeepingView, name="housekeeping"),
-    path('housekeeping/form/',views.add_housekeeping, name="add_housekeeping"),
-    path('housekeeping/info/',views.get_housekeeping, name="get_housekeeping"),
-    path('housekeeping/update/',views.update_housekeeping, name="update_housekeeping"),
-    path('housekeeping/delete/',views.delete_housekeeping, name="delete_housekeeping"),
+    path('housekeepingStatus/',views.housekeepingStatusView, name="housekeepingStatus"),
+    path('housekeepingStatus/form/',views.add_housekeepingStatus, name="add_housekeepingStatus"),
+    path('housekeepingStatus/info/',views.get_housekeepingStatus, name="get_housekeepingStatus"),
+    path('housekeepingStatus/update/',views.update_housekeepingStatus, name="update_housekeepingStatus"),
+    path('housekeepingStatus/delete/',views.delete_housekeepingStatus, name="delete_housekeepingStatus"),
 ]

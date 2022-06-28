@@ -200,7 +200,7 @@ function delete_departments(pk){
 
 function validation(elem){
     const data = new FormData(elem);
-    data.append('Description', editor.getData())
+    data.append('description', editor.getData())
     
     fetch(elem.action,{
         method: 'POST',
