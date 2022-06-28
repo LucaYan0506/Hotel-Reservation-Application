@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () =>{
     show_hideSubMenu(document.querySelector('.menu-option-container#hotel-configuration #menu-option'))
     document.querySelector('.menu-option-container#hotel-configuration #menu-option').style.background = 'rgb(0,95,112)';
-    document.querySelector('.menu-option-container#hotel-configuration #sub-menu #floors').style.color = 'white';
+    document.querySelector('.menu-option-container#hotel-configuration #sub-menu #housekeeping-status').style.color = 'white';
     load();
 })
 
@@ -10,37 +10,45 @@ document.querySelector('#search-bar').addEventListener('keypress', e => {
         start = 1;
         load();
     }
+});
+
+document.querySelector('form').onsubmit = () =>{
+    return validation(document.querySelector('form'));
+};
+
+document.querySelector('#form-container #id_image').addEventListener('change', () =>{
+    const [file] = document.querySelector('#form-container #id_image').files
+    if (file) {
+        document.querySelector('form img').src =  URL.createObjectURL(file)
+    }
 })
 
-document.querySelector('form').onsubmit = () => {
-    return validation(document.querySelector('form'));
-}
 
-function show_floorForm(){
+function show_housekeepingForm(){
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
 }
 
-function hide_floorForm(){
-    location.reload('/admin/floor/')
+function hide_housekeepingForm(){
+    location.reload('/admin/housekeeping/')
 }
 
-function create_row(floor,i){
+function create_row(housekeeping,i){
 /*
 <tr>
     <th scope="row">{{row.pk}}</th>
     <td>{{row.Title}}</td>
     <td>{{row.Short_Code}}</td>
     <td>
-        <button class="btn" onclick="view_amenity(1)" style="border:solid 1px gray;">
+        <button class="btn" onclick="view_housekeeping(1)" style="border:solid 1px gray;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
             View
         </button>
-        <button class="btn" onclick="edit_amenity(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+        <button class="btn" onclick="edit_housekeeping(1)" style="color: #fff; background-color: #007bff; border-color: #007bff;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
             Edit
         </button>
-        <button class="btn" onclick="delete_amenity(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+        <button class="btn" onclick="delete_housekeeping(1)" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
             <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
             Delete
         </button>
@@ -54,28 +62,26 @@ function create_row(floor,i){
     th.innerHTML = i;
 
     const td1 = document.createElement('td');
-    td1.innerHTML = floor.name;
+    td1.innerHTML = housekeeping.name;
+
 
     const td2 = document.createElement('td');
-    td2.innerHTML = floor.number;
+    if (housekeeping.active)
+        td2.innerHTML = 'Active';
+    else
+        td2.innerHTML = 'Inactive';
 
     const td3 = document.createElement('td');
-    if (floor.active)
-        td3.innerHTML = 'Active';
-    else
-        td3.innerHTML = 'Inactive';
-
-    const td4 = document.createElement('td');
-    td4.innerHTML = `   
-    <button class="btn" onclick="view_floor(${floor.pk})" style="border:solid 1px gray;">
+    td3.innerHTML = `   
+    <button class="btn" onclick="view_housekeeping(${housekeeping.pk})" style="border:solid 1px gray;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
         View
     </button>
-    <button class="btn" onclick="edit_floor(${floor.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
+    <button class="btn" onclick="edit_housekeeping(${housekeeping.pk})" style="color: #fff; background-color: #007bff; border-color: #007bff;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 5px;">edit</i>
         Edit
     </button>
-    <button class="btn" onclick="delete_floor(${floor.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
+    <button class="btn" onclick="delete_housekeeping(${housekeeping.pk})" style="color: #fff; background-color: #dc3545; border-color: #dc3545;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;padding-right: 2px;">delete</i>
         Delete
     </button>`;
@@ -84,7 +90,6 @@ function create_row(floor,i){
     tr.append(td1);
     tr.append(td2);
     tr.append(td3);
-    tr.append(td4);
 
     document.querySelector('.table tbody').append(tr);
 }
@@ -105,13 +110,13 @@ function load(){
         document.querySelector('#btn-container').remove()
     let end = start + quantity - 1;
     let contain = document.querySelector('#search-bar').value;
-    //show floor
-    fetch(`/admin/floor/info/?start=${start}&end=${end}&contain=${contain}`)
+    //show housekeeping
+    fetch(`/admin/housekeeping/info/?start=${start}&end=${end}&contain=${contain}`)
     .then(response => response.json())
     .then(data =>{
         let i = start;
-        data.floor.forEach(floor => {
-           create_row(floor,i++);
+        data.housekeeping.forEach(housekeeping => {
+           create_row(housekeeping,i++);
         });
 
         //increasing start
@@ -141,7 +146,7 @@ function load(){
         nextBtn.onclick = () => {
             load();
         }
-        nextBtn.disabled = start > data.total_floor;
+        nextBtn.disabled = start > data.total_housekeeping;
         btn_container.append(nextBtn);
 
         const div_clear = document.createElement('div');
@@ -159,24 +164,23 @@ CKEDITOR.on('instanceReady', function(ev) {
     });
   
 
-function view_floor(pk){
-    show_floorForm();
+function view_housekeeping(pk){
+    show_housekeepingForm();
 
-    fetch(`/admin/floor/info/?pk=${pk}`)
+    fetch(`/admin/housekeeping/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(floor => {
-        document.querySelector('#form-container #id_name').value = floor.name;
+    .then(housekeeping => {
+        document.querySelector('#form-container #id_name').value = housekeeping.name;
         document.querySelector('#form-container #id_name').disabled = true;
 
-        document.querySelector('#form-container #id_number').value = floor.number;
-        document.querySelector('#form-container #id_number').disabled = true;
-
-        document.querySelector('#form-container #id_active').checked = floor.active;
+        document.querySelector('#form-container #id_active').checked = housekeeping.active;
         document.querySelector('#form-container #id_active').disabled = true;
 
-        editor.setData(floor.description)
+        editor.setData(housekeeping.description)
         editor.setReadOnly(true);
 
+        document.querySelector('#form-container img').src = housekeeping.image;
+        document.querySelector('#form-container #id_image').disabled = true;
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -199,19 +203,19 @@ function view_floor(pk){
     document.querySelector('#form-container').append(a)
 }
 
-function edit_floor(pk){
-    show_floorForm();
+function edit_housekeeping(pk){
+    show_housekeepingForm();
 
-    fetch(`/admin/floor/info/?pk=${pk}`)
+    fetch(`/admin/housekeeping/info/?pk=${pk}`)
     .then(response => response.json())
-    .then(floor => {
-        document.querySelector('#form-container #id_name').value = floor.name;
+    .then(housekeeping => {
+        document.querySelector('#form-container #id_name').value = housekeeping.name;
 
-        document.querySelector('#form-container #id_number').value = floor.number;
+        document.querySelector('#form-container #id_active').checked = housekeeping.active;
 
-        document.querySelector('#form-container #id_active').checked = floor.active;
+        editor.setData(housekeeping.description)
 
-        editor.setData(floor.description)
+        document.querySelector('#form-container img').src = housekeeping.image;
     })
 
     const input = document.querySelector('input');
@@ -220,14 +224,14 @@ function edit_floor(pk){
     input.id = 'id_pk';
     input.name = 'pk';
     document.querySelector('form').append(input);
-    document.querySelector('form').action = "/admin/floor/update/"
+    document.querySelector('form').action = "/admin/housekeeping/update/"
 
 }
 
-function delete_floor(pk){
-    if (confirm('Are you sure to delete this floor and all rooms in this floor?')){
+function delete_housekeeping(pk){
+    if (confirm('Are you sure to delete this housekeeping?')){
         fetch()
-        window.location.replace(`/admin/floor/delete/?pk=${pk}`)
+        window.location.replace(`/admin/housekeeping/delete/?pk=${pk}`)
     }
 }
 
@@ -236,19 +240,19 @@ function delete_floor(pk){
 function validation(elem){
     const data = new FormData(elem);
     data.append('Description', editor.getData())
-    data.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+    
     fetch(elem.action,{
         method: 'POST',
-        header: {  
+        header: {
             'Content-Type': "multipart/form-data",
-        }, 
+        },
         body: data,
         credentials: 'same-origin',
     })
     .then(response => response.json())
     .then(message => {
         if (message.Result == 'Succeed')
-            location.reload('/admin/floor/')
+            location.reload('/admin/housekeeping/')
         else{
             alert(message.Result)
 
@@ -262,6 +266,5 @@ function validation(elem){
             }
         }
     })
-    
     return false;
 }

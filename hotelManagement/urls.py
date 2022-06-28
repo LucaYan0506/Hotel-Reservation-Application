@@ -25,6 +25,7 @@ urlpatterns = [
     path('amenity/delete/',views.delete_amenity, name="delete_amenity"),
 
     path('room/',views.roomView, name="room"),
+    #path('room/housekeeping',views.roomView, name="room"),
     path('room/form/',views.add_room, name="add_room"),
     path('room/info/',views.get_room, name="get_room"),
     path('room/update/',views.update_room, name="update_room"),
@@ -47,4 +48,10 @@ urlpatterns = [
     path('positions/info/',views.get_positions, name="get_positions"),
     path('positions/update/',views.update_positions, name="update_positions"),
     path('positions/delete/',views.delete_positions, name="delete_positions"),
+
+    path('housekeeping/',views.housekeepingView, name="housekeeping"),
+    path('housekeeping/form/',views.add_housekeeping, name="add_housekeeping"),
+    path('housekeeping/info/',views.get_housekeeping, name="get_housekeeping"),
+    path('housekeeping/update/',views.update_housekeeping, name="update_housekeeping"),
+    path('housekeeping/delete/',views.delete_housekeeping, name="delete_housekeeping"),
 ]
