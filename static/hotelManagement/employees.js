@@ -47,12 +47,15 @@ function li_click(el){
 }
 
 function show_employeesForm(){
+    document.querySelector('#form-container #id_pk').style.display = "none";
+    document.querySelector('label[for="id_pk"').style.display = "none";
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
 }
 
 function hide_employeesForm(){
-    location.reload('/admin/employees/')
+    document.querySelector('#table-container').style.display = 'block';   
+    document.querySelector('#form-container').style.display = 'none';   
 }
 
 function create_row(employees,i){
@@ -185,6 +188,8 @@ function view_employees(pk){
     fetch(`/admin/employees/info/?pk=${pk}`)
     .then(response => response.json())
     .then(employees => {
+        document.querySelector('#form-container #id_pk').style.display = "";
+        document.querySelector('label[for="id_pk"').style.display = "";
         document.querySelector('#form-container #id_pk').value = employees.pk;
         document.querySelector('#form-container #id_pk').disabled = true;
 
@@ -272,6 +277,8 @@ function edit_employees(pk){
     fetch(`/admin/employees/info/?pk=${pk}`)
     .then(response => response.json())
     .then(employees => {
+        document.querySelector('#form-container #id_pk').style.display = "";
+        document.querySelector('label[for="id_pk"').style.display = "";
         document.querySelector('#form-container #id_pk').value = employees.pk;
         document.querySelector('#form-container #id_pk').disabled = true;
 
