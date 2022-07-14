@@ -185,6 +185,9 @@ function view_employees(pk){
     fetch(`/admin/employees/info/?pk=${pk}`)
     .then(response => response.json())
     .then(employees => {
+        document.querySelector('#form-container #id_pk').value = employees.pk;
+        document.querySelector('#form-container #id_pk').disabled = true;
+
         document.querySelector('#form-container #id_title').value = employees.title;
         document.querySelector('#form-container #id_title').disabled = true;
         
@@ -269,6 +272,9 @@ function edit_employees(pk){
     fetch(`/admin/employees/info/?pk=${pk}`)
     .then(response => response.json())
     .then(employees => {
+        document.querySelector('#form-container #id_pk').value = employees.pk;
+        document.querySelector('#form-container #id_pk').disabled = true;
+
         document.querySelector('#form-container #id_title').value = employees.title;
         
         document.querySelector('#form-container #id_gender').value = employees.gender;
