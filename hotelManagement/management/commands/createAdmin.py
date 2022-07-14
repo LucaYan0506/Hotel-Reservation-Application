@@ -53,5 +53,5 @@ class Command(BaseCommand):
             employee.save()
             
             self.stdout.write('Admin account created')
-
-        self.stdout.write('Admin account already exists')
+        else:
+            self.stdout.write('Admin account already exists')

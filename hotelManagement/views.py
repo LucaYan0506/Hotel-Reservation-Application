@@ -1,3 +1,4 @@
+from distutils.log import error
 from django.shortcuts import render, reverse
 from django.contrib.auth import login,logout,authenticate
 from django.http import HttpResponse,JsonResponse, HttpResponseRedirect
@@ -74,7 +75,7 @@ def get_room_type(request):
 
     #if user want specific room type
     if request.GET.get('contain'):
-        data =  Room_Type.objects.filter(Title__icontains=request.GET.get('contain')).all()
+        data =  Room_Type.objects.filter(title__icontains=request.GET.get('contain')).all()
 
     #get from start to end posts
     data2 = []
@@ -320,14 +321,6 @@ def roomView(request):
 
     return HttpResponseRedirect(reverse('login'))
 
-def room_housekeepingView(request,id):
-    if request.user.is_authenticated:
-        return render(request,'hotelManagement/room.html',{
-            'form': RoomForm(),
-        })
-
-    return HttpResponseRedirect(reverse('login'))
-
 def add_room(request):
     if request.method == 'POST':
         formset = RoomForm(request.POST)
@@ -380,11 +373,102 @@ def update_room(request):
         data = request.POST
         formset = RoomForm(request.POST)
         room = Room.objects.get(pk = data['pk'])
-        if formset.is_valid():
+                
+        errors = formset.errors.as_data()
+       
+        if (int)(data['room_number']) == (int)(room.room_number) and 'room_type' not in errors and 'floor' not in errors:
             room.room_type = Room_Type.objects.get(pk = data['room_type'])
             room.floor = Floor.objects.get(pk = data['floor'])
             room.room_number = data['room_number']
             room.save()
+
+            return JsonResponse({'Result':'Succeed',},safe=False)
+                        
+        if (int)(data['room_number']) == (int)(room.room_number):
+            errors_copy = errors
+            errors = ""
+            if 'floor' in errors_copy:
+                errors = '{"floor": [{"message": "%s"}]}' % (errors_copy['floor'][0].messages[0])
+            if 'room_type' in errors_copy :
+                errors = '{"room_type": [{"message": "%s"}]}' % (errors_copy['room_type'][0].messages[0])
+        else:
+            errors = formset.errors.as_json()
+        return JsonResponse({
+            'Result':'Failed',
+            'error': errors,
+            },
+            safe=False)
+        
+
+    return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
+
+def delete_room(request):
+    Room.objects.get(pk = request.GET.get('pk')).delete()
+
+    return HttpResponseRedirect(reverse('room'))
+
+def room_housekeepingView(request):
+    id = request.GET.get('id') or None
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/housekeeping.html',{
+            'form': HousekeepingForm(),
+            'id':id,
+            'employees':Employee.objects.all(),
+            'rooms':Room.objects.all(),
+            'housekeeping_statuses':HousekeepingStatus.objects.all(),
+        })
+
+    return HttpResponseRedirect(reverse('login'))
+
+def get_housekeeping(request):
+    if (request.GET.get('pk')):
+        housekeeping = Housekeeping.objects.get(pk = request.GET.get('pk'))
+        return JsonResponse(housekeeping.serialize(), safe=False)
+
+
+    start = int(request.GET.get('start') or 1)
+    end = int(request.GET.get('end') or start + 4)
+
+    data = Housekeeping.objects.all()
+
+    #if user want specific housekeeping
+    if request.GET.get('filter') == 'True':
+        if request.GET.get('assigned_to'):
+            user_query = request.GET.get('assigned_to')
+            if user_query[-1] == ',':
+                user_query = user_query[:-1]
+            list = set(user_query.split(','))
+            data = data.filter(assign_to__in = list)
+        if request.GET.get('room_number'):
+            user_query = request.GET.get('room_number')
+            if user_query[-1] == ',':
+                user_query = user_query[:-1]
+            list = set(user_query.split(','))
+            data = data.filter(room__in = list)
+        if request.GET.get('housekeeping_status'):
+            user_query = request.GET.get('housekeeping_status')
+            if user_query[-1] == ',':  
+                user_query = user_query[:-1]
+            list = set(user_query.split(','))
+            data = data.filter(housekeeping_status__in = list)
+    #get from start to end posts
+    data2 = []
+    index = 1
+    for x in data:
+        if index >= start  and index <= end:
+            data2.append(x)
+        index += 1
+
+    return JsonResponse({
+        'total_housekeeping':data.count(),
+        'housekeeping':[x.serialize() for x in data2]
+        },safe=False)
+
+def add_housekeeping(request):
+    if request.method == 'POST':
+        formset = HousekeepingForm(request.POST)
+        if formset.is_valid():
+            formset.save()
 
             return JsonResponse({'Result':'Succeed',},safe=False)
                         
@@ -397,11 +481,33 @@ def update_room(request):
 
     return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
 
-def delete_room(request):
-    Room.objects.get(pk = request.GET.get('pk')).delete()
+def update_housekeeping(request):
+    if request.method == 'POST':
+        data = request.POST
+        print(data)
+        formset = HousekeepingForm(request.POST)
+        housekeeping = Housekeeping.objects.get(pk = data['pk'])
+        if formset.is_valid():
+            housekeeping.room = Room.objects.get(pk = data['room'])
+            housekeeping.housekeeping_status = HousekeepingStatus.objects.get(pk = data['housekeeping_status'])
+            housekeeping.assign_to = Employee.objects.get(pk = data['assign_to'])
+            housekeeping.save()
 
-    return HttpResponseRedirect(reverse('room'))
+            return JsonResponse({'Result':'Succeed',},safe=False)
+                        
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+        
 
+    return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
+
+def delete_housekeeping(request):
+    Housekeeping.objects.get(pk = request.GET.get('pk')).delete()
+
+    return HttpResponseRedirect(reverse('housekeeping'))
 
 
 def employeesView(request):
@@ -418,6 +524,10 @@ def add_employees(request):
         formset = EmployeeForm(request.POST)
         if formset.is_valid():
             formset.save()
+            employee = Employee.objects.last()
+            for x in list(request.POST['position']):
+                employee.user_permission.add(User_permission.objects.get(pk = x))
+            employee.save()
             return JsonResponse({
             'Result':'Succeed',
             },
@@ -480,7 +590,6 @@ def update_employees(request):
                     employee.position = Positions.objects.get(pk = data[key])
                     continue
                 if key == 'user_permission':
-                    print(list(data[key]))
                     for x in list(data[key]):
                         employee.user_permission.add(User_permission.objects.get(pk = x))
                     continue
@@ -683,14 +792,14 @@ def delete_positions(request):
 def housekeepingStatusView(request):
     if request.user.is_authenticated:
         return render(request,'hotelManagement/housekeepingStatus.html',{
-            'form': HousekeepingForm(),
+            'form': HousekeepingStatusForm(),
         })
 
     return HttpResponseRedirect(reverse('login'))
 
 def add_housekeepingStatus(request):
     if request.method == 'POST':
-        formset = HousekeepingForm(request.POST)
+        formset = HousekeepingStatusForm(request.POST)
         if formset.is_valid():
             formset.save()
             return JsonResponse({
@@ -709,18 +818,18 @@ def add_housekeepingStatus(request):
 
 def get_housekeepingStatus(request):
     if (request.GET.get('pk')):
-        housekeeping = Housekeeping.objects.get(pk = request.GET.get('pk'))
+        housekeeping = HousekeepingStatus.objects.get(pk = request.GET.get('pk'))
         return JsonResponse(housekeeping.serialize(), safe=False)
 
 
     start = int(request.GET.get('start') or 1)
     end = int(request.GET.get('end') or start + 4)
 
-    data = Housekeeping.objects.all()
+    data = HousekeepingStatus.objects.all()
 
     #if user want specific position
     if request.GET.get('contain'):
-        data =  Housekeeping.objects.filter(name__icontains=request.GET.get('contain')).all()
+        data =  HousekeepingStatus.objects.filter(name__icontains=request.GET.get('contain')).all()
 
     #get from start to end posts
     data2 = []
@@ -738,8 +847,8 @@ def get_housekeepingStatus(request):
 def update_housekeepingStatus(request):
     if request.method == 'POST':
         data = request.POST
-        formset = HousekeepingForm(data)
-        housekeeping = Housekeeping.objects.get(pk = data['pk'])
+        formset = HousekeepingStatusForm(data)
+        housekeeping = HousekeepingStatus.objects.get(pk = data['pk'])
         if formset.is_valid():
             housekeeping.name = data['name']
             housekeeping.description = data['description']
@@ -764,6 +873,6 @@ def update_housekeepingStatus(request):
     return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
 
 def delete_housekeepingStatus(request):
-    Housekeeping.objects.get(pk = request.GET.get('pk')).delete()
+    HousekeepingStatus.objects.get(pk = request.GET.get('pk')).delete()
 
     return HttpResponseRedirect(reverse('housekeeping'))

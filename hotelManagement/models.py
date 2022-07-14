@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ModelForm
@@ -120,7 +119,7 @@ class Room(models.Model):
     room_number = models.IntegerField(unique=True)
 
     def __str__(self):
-        return self.room_number
+        return str(self.room_number)
 
     def serialize(self):
         return {
@@ -717,7 +716,7 @@ class EmployeeForm(ModelForm):
         model = Employee
         fields = ['title','gender','first_name','last_name','username','email','password','confirm_password','date_of_birth','country_calling_code','phone_number', 'department', 'position', 'country', 'city', 'address', 'image']
 
-class Housekeeping(models.Model):
+class HousekeepingStatus(models.Model):
     name = models.CharField(max_length=255)
     description = RichTextField(blank=True)
     active = models.BooleanField()
@@ -731,6 +730,26 @@ class Housekeeping(models.Model):
             'name': self.name,
             'description': self.description,
             'active': self.active,
+        }
+
+class HousekeepingStatusForm(ModelForm):
+    class Meta:
+        model = HousekeepingStatus
+        fields = '__all__'
+
+class Housekeeping(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    housekeeping_status = models.ForeignKey(HousekeepingStatus, on_delete=models.CASCADE)
+    assign_to = models.ForeignKey(Employee, on_delete=models.CASCADE)    
+    def __str__(self):
+        return str(self.pk)
+    
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'room': {'pk':self.room.pk,'value': self.room.room_number},
+            'housekeeping_status': {'pk':self.housekeeping_status.pk,'value':self.housekeeping_status.name},
+            'assigned_to': {'pk':self.assign_to.pk,'value':self.assign_to.username},
         }
 
 class HousekeepingForm(ModelForm):

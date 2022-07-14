@@ -25,11 +25,16 @@ urlpatterns = [
     path('amenity/delete/',views.delete_amenity, name="delete_amenity"),
 
     path('room/',views.roomView, name="room"),
-    path('room/<int:id>',views.room_housekeepingView, name="room"),
     path('room/form/',views.add_room, name="add_room"),
     path('room/info/',views.get_room, name="get_room"),
     path('room/update/',views.update_room, name="update_room"),
     path('room/delete/',views.delete_room, name="delete_room"),
+    path('room/housekeeping/',views.room_housekeepingView, name="housekeeping"),
+    path('room/housekeeping/form/',views.add_housekeeping, name="add_housekeeping"),
+    path('room/housekeeping/info/',views.get_housekeeping, name="get_housekeeping"),
+    path('room/housekeeping/update/',views.update_housekeeping, name="update_housekeeping"),
+    path('room/housekeeping/delete/',views.delete_housekeeping, name="delete_housekeeping"),
+
 
     path('employees/',views.employeesView, name="employees"),
     path('employees/form/',views.add_employees, name="add_employees"),

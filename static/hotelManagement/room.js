@@ -66,7 +66,7 @@ function create_row(room,i){
 
     const td4 = document.createElement('td');
     td4.innerHTML = `   
-    <button class="btn" onclick="alert('working in progress')" style="background-color: #00b0ee; border-color: #00b0ee;color:white">
+    <button class="btn" onclick="HousekeepingShow(${room.pk})" style="background-color: #00b0ee; border-color: #00b0ee;color:white">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: white;padding-right: 2px;">home</i>
         Housekeeping
     </button>
@@ -175,6 +175,7 @@ function edit_room(pk){
     input.style.display = 'none';
     input.id = 'id_pk';
     input.name = 'pk';
+    input.type = 'hidden';
     document.querySelector('form').append(input);
     document.querySelector('form').action = "/admin/room/update/"
 
@@ -203,7 +204,7 @@ function validation(elem){
     .then(response => response.json())
     .then(message => {
         if (message.Result == 'Succeed')
-            location.reload('/admin/room/')
+            location.reload()
         else{
             alert(message.Result)
 
@@ -218,4 +219,8 @@ function validation(elem){
         }
     })
     return false;
+}
+
+function HousekeepingShow(id){
+    window.location.replace(`/admin/room/housekeeping?id=${id}`)
 }

@@ -50,18 +50,18 @@ body{
     cursor: pointer;
 }
 
-#sub-menu{
+.menu-option-container #sub-menu{
     background-color: rgb(38, 55, 65);
     width: 100%;
     height: 0px;
     overflow: hidden;
 }
 
-#sub-menu.show{
+.menu-option-container #sub-menu.show{
     animation: show-sub-menu 2s forwards;
 }
 
-#sub-menu.hide{
+.menu-option-container #sub-menu.hide{
     animation: hide-sub-menu 2s forwards;
 }
 
@@ -84,11 +84,11 @@ body{
     }
 }
 
-#sub-menu ul{
+.menu-option-container #sub-menu ul{
     margin: 0;
 }
 
-#sub-menu ul li {
+.menu-option-container #sub-menu ul li {
     padding: 5px 0px;
     color: rgb(138 165 181);
     list-style: circle;
@@ -99,7 +99,7 @@ body{
     color:white;
 }
 
-#sub-menu ul li a{
+.menu-option-container #sub-menu ul li a{
     text-decoration: none;
     color:unset;
 }

@@ -86,12 +86,14 @@ function create_row(employees,i){
     const td1 = document.createElement('td');
     td1.innerHTML = employees.username;
 
-
     const td2 = document.createElement('td');
     td2.innerHTML = employees.position.name;
 
     const td3 = document.createElement('td');
-    td3.innerHTML = `   
+    td3.innerHTML = employees.pk;
+
+    const td4 = document.createElement('td');
+    td4.innerHTML = `   
     <button class="btn" onclick="view_employees(${employees.pk})" style="border:solid 1px gray;">
         <i class="material-icons" style="vertical-align: text-top;font-size: 1rem;color: black;padding-right: 2px;">remove_red_eye</i>
         View
@@ -109,6 +111,7 @@ function create_row(employees,i){
     tr.append(td1);
     tr.append(td2);
     tr.append(td3);
+    tr.append(td4);
 
     document.querySelector('.table tbody').append(tr);
 }
