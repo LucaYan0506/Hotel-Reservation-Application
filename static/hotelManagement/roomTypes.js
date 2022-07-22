@@ -1,9 +1,19 @@
-document.addEventListener('DOMContentLoaded', () =>{
+document.addEventListener('DOMContentLoaded', () =>{   
     show_hideSubMenu(document.querySelector('.menu-option-container#hotel-configuration #menu-option'))
     document.querySelector('.menu-option-container#hotel-configuration #menu-option').style.background = 'rgb(0,95,112)';
     document.querySelector('.menu-option-container#hotel-configuration #sub-menu #room-types').style.color = 'white';
     load();
 })
+
+document.querySelector('#add-image').onclick = () => {
+    myWindow = window.open('http://127.0.0.1:8000/admin/image/','popUpWindow','height=500,width=400,left=100,top=100');
+    // var timer = setInterval(function() {   
+    //     if(myWindow.closed) {  
+    //         clearInterval(timer);  
+    //         alert('closed');  
+    //     }  
+    // }, 1000); 
+};
 
 document.querySelector('#search-bar').addEventListener('keypress', e => {
     if (e.key == 'Enter'){
@@ -25,7 +35,9 @@ function show_roomTypesForm(){
 }
 
 function hide_roomTypesForm(){
-    location.reload('/admin/room_types/')
+    if (typeof myWindow !== 'undefined')
+        myWindow.close();
+    location.reload();
 }
 
 function create_row(room_type,i){
@@ -160,7 +172,6 @@ function view_roomType(pk){
     fetch(`/admin/room_types/info/?pk=${pk}`)
     .then(response => response.json())
     .then(room_type => {
-        console.log(room_type)
         document.querySelector('#form-container #id_title').value = room_type.title;
         document.querySelector('#form-container #id_title').disabled = true;
 
@@ -198,7 +209,12 @@ function view_roomType(pk){
 
         document.querySelector('#form-container #id_image').disabled = true;
 
-        document.querySelector('form img').src = room_type.image
+        room_type.image.forEach(image => {
+            const option = document.createElement('option');
+            option.value = image.pk;
+            option.innerHTML = image.name;
+            document.querySelector('form #id_image').append(option);
+        })
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -251,7 +267,12 @@ function edit_roomType(pk){
 
         document.querySelector('#form-container #id_extra_bed_price').value = room_type.extra_bed_price;
 
-        document.querySelector('form img').src = room_type.image
+        room_type.image.forEach(image => {
+            const option = document.createElement('option');
+            option.value = image.pk;
+            option.innerHTML = image.name;
+            document.querySelector('form #id_image').append(option);
+        })
     })
 
     const input = document.querySelector('input');
@@ -278,7 +299,10 @@ document.querySelector('form').onsubmit = () =>{
 function validation(elem){
     const data = new FormData(elem);
     data.append('description', editor.getData())
-    
+    document.querySelectorAll('#id_image option').forEach(elem =>{
+        data.append('image', parseInt(elem.value));
+    })
+
     fetch(elem.action,{
         method: 'POST',
         header: {  

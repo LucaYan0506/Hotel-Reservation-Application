@@ -1,4 +1,8 @@
-#table-container, #form-container{
+html{
+    scroll-behavior: smooth;
+    scroll-padding-top: 160px;
+}
+#form-container{
     color: rgb(63, 63, 63);
     width: calc(100% - 30px);
     background-color: white;
@@ -9,51 +13,8 @@
     position: relative;
 }
 
-#search-bar-container{
-    position: absolute;
-    top: 57px;
-    right: 5px;
-    display: flex; 
-    align-items: center;
-}
-
-#search-bar{
-    width: 150px;
-    height: 30px;
-    border:solid 1px #80808070;
-    border-radius: 10pc;
-    margin-left: 5px;
-    padding:0 10px;
-}
-
-.table{
-    border-collapse: collapse;
-    margin:30px 10px;
-    width: calc(100% - 20px);
-    margin-bottom: 1rem;
-    overflow: auto;
-}
-
-.table *{
-    box-sizing: border-box;
-}
-
-.table td, .table th {
-    padding: 0.75rem;
-    vertical-align: bottom;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.table tbody tr:hover{
-    background-color: #ececec;
-}
-th {
-    text-align: inherit;
-}
-
-tr td:last-child {
-    width: 1%;
-    white-space: nowrap;
+select{
+    padding: 5px 10px;
 }
 
 .btn{
@@ -71,12 +32,11 @@ tr td:last-child {
     border-radius: 0.25rem;
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     cursor: pointer;
-    margin-right: 5px;
 }
 
-#new-amenity{
+.btn#new-housekeeping{
     position: absolute;
-    right: 5px;
+    right: 35px;
     top: 10px;
     color: #fff;
     background-color: #28a745; 
@@ -84,24 +44,14 @@ tr td:last-child {
 }
 
 @media only screen and (max-width: 750px) {
-    .btn#new-amenity{
+    .btn#new-housekeeping{
         position: initial;
         margin-bottom: 5px;
-    }
-    #search-bar-container{
-        position: initial;
-    }
-
-    #search-bar{
-        width: calc(100% - 80px);
-    }
-    #table-container p{
-        margin-bottom: 0;
     }
   }
 
 
-#form-container form input{
+#form-container form select{
     padding: 5px 10px;
     width: 40%;
     min-width: 450px;
@@ -112,12 +62,6 @@ tr td:last-child {
     vertical-align: top;
 }
 
-#form-container form input#id_active{
-    width: 15px;
-    min-width: unset;
-    margin-right: calc(100% - 25px - max(10%, 200px));
-}
-
 #form-container form label{
     min-width: 200px;
     width: 10%;
@@ -126,20 +70,8 @@ tr td:last-child {
     display: inline-block;
 }
 
-.django-ckeditor-widget{
-    width: calc(calc(100% - 10px) - max(200px, 10%));
-    min-width: 450px;
-    overflow: auto;
-    vertical-align: text-top;
-}
-
-#cke_id_Description{
-    min-width: 835px;
-    width: 40%!important;
-}
-
 @media only screen and (max-width: 1400px) {
-    #form-container form input{
+    #form-container form select{
         width: calc(100% - 30px);
         min-width: unset;
         max-width: 810px;
@@ -149,10 +81,6 @@ tr td:last-child {
         width: calc(100% - 20px);
         min-width: unset;
         display: block;
-    }
-    .django-ckeditor-widget{
-        width: calc(100% - 20px);
-        min-width: unset;
     }
   }
 
@@ -171,8 +99,92 @@ tr td:last-child {
     float:right;
 }
 
-#id_image{
+.btn#delete{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background-color: #dc3545;
+    width: 300px;
+    color:white;
+}
+
+.btn#add{
+    color: #fff;
+    background-color: #28a745; 
+    width:100%;
+    position:fixed;
+    bottom:0;
+    left: 0;
+    border-radius: 0;
+}
+
+.images div {
+	position: relative;
     display: inline-block;
+	width: 300px;
+	height: 200px;
+	margin: 25px 0 0 25px;
+	padding: 0;
+}
+
+.images{
+    margin-top:160px;
+    margin-bottom:40px;
+}
+
+.images div span {
+	position: absolute;
+	top: 0px;
+	left: 0;
+	display: block;
+	width: 300px;
+	margin: 0;
+	padding: 0;
+	font-size: 18px;
+	text-decoration: none;
+	text-align: center;
+	-webkit-transition: .3s ease-in-out;
+	transition: .3s ease-in-out;
+	opacity: 0;
+}
+
+figure {
+    display: flex;
+    justify-content: center;
+	width: 300px;
+	height: 200px;
+	margin: 0;
+	padding: 0;
+	background: #fff;
+	overflow: hidden;
+}
+figure:hover span {
+	opacity: 1;
+	top: 36px;
+}
+
+figure img {
+    height: 180px;
+	-webkit-transform: scale(1);
+	transform: scale(1);
+	-webkit-transition: .3s ease-in-out;
+	transition: .3s ease-in-out;
+}
+figure:hover img {
+	-webkit-transform: scale(1.3);
+	transform: scale(1.3);
+	opacity: .2;
+}
+
+#form-container form label{
+    min-width: 200px;
+    width: 10%;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+#form-container form input, #form-container form select{
     padding: 5px 10px;
     width: 40%;
     min-width: 450px;
@@ -181,9 +193,19 @@ tr td:last-child {
     margin-bottom: 5px;
     margin-top: 5px;
     vertical-align: top;
-    border: 1px solid rgb(99 99 99);
-    border-radius: 2px;
-    height: 80px;
-    overflow-y: scroll;
-    overflow-x: auto;
 }
+
+@media only screen and (max-width: 1400px) {
+    #form-container form input, #form-container form select{
+        width: calc(100% - 30px);
+        min-width: unset;
+        max-width: 810px;
+        margin-right: 0;
+    }
+    #form-container form label{
+        width: calc(100% - 20px);
+        min-width: unset;
+        display: block;
+    }
+   
+  }

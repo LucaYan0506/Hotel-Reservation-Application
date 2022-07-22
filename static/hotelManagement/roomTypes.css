@@ -165,3 +165,20 @@ tr td:last-child {
 #btn-container #next{
     float:right;
 }
+
+#id_image{
+    display: inline-block;
+    padding: 5px 10px;
+    width: 40%;
+    min-width: 450px;
+    font-size: 18px;
+    margin-right: calc(50% - max(10%, 200px));
+    margin-bottom: 5px;
+    margin-top: 5px;
+    vertical-align: top;
+    border: 1px solid rgb(99 99 99);
+    border-radius: 2px;
+    height: 80px;
+    overflow-y: scroll;
+    overflow-x: auto;
+}

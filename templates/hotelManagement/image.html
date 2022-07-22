@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'hotelManagement/image.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Add Image | Hotel Management</title>
+</head>
+<body style="background:whitesmoke">    
+    <div id="table-container">
+        <div style="
+        position: fixed;
+        left:0;
+        top:0;
+        width: 100%;
+        background: whitesmoke;
+        height: 160px;
+        z-index: 2;
+        margin-left: 25px;">
+            <h1>Images</h1>
+            <button onclick="show_Form()" class="btn" id="new-housekeeping"><b>+ </b>Upload new image</button>
+            <div style="clear: both;"></div>
+            <label for="folder">Folder</label>
+            <select id="folder">
+                {% for folder in folders%}
+                <option value="{{folder.name}}">{{folder.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    
+        
+        <div class="images">
+            {% for folder in folders%}
+            <h3 style="margin:25px 0 10px 25px" id="{{folder.name}}">{{folder.name}}</h2>
+            
+                {% for image in folder.image_set.all %}
+                <div data-selected="false" data-image_pk="{{image.pk}}">
+                    <figure>
+                        <img src="{{image.image.url}}"/>
+                        <span>{{image.image.name}}</span>
+                    </figure>
+                    <button class="btn" id="delete" onclick="deleteImage({{image.pk}})">Delete</button>
+                </div>
+                {% endfor %}
+            {% endfor%}  
+        </div>
+        <button class="btn" id="add" onclick="post_value()">Add</button>
+    </div>
+
+    <div id="form-container" style="display:none;">
+        <h1>Image</h1>
+        <form action="/admin/image/add/" method="post">
+            {% csrf_token %}
+            {{form}}
+            <button class="btn" style=" color: #fff;background-color: #28a745;border-color: #28a745;float: right; width: calc(50% - 10px);;">Add</button>
+        </form>
+        <button onclick="hide_Form()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
+
+    </div>
+    <script type="text/javascript" src="{% static "hotelManagement/image.js" %}"></script>
+</body>
+</html>

@@ -2,34 +2,68 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ModelForm
 from django import forms
+from pkg_resources import require
 from ckeditor.fields import RichTextField 
 
 # Create your models here.
+class ImageFolder(models.Model):
+    name = models.CharField(max_length=256, unique=True)
+
+    def __str__(self):
+        return self.name
+
+def upload_path(instance,title):
+    print(title)
+    name = instance.folder.name
+    return f'{name}/{title}'
+    
+
+class Image(models.Model):
+    folder = models.ForeignKey(ImageFolder, on_delete=models.CASCADE)
+    image = models.ImageField(blank=True, null=True, upload_to=upload_path)
+
+    def __str__(self):
+            return self.image.name
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'folder': {'pk': self.folder.pk, 'name': self.folder.name},
+            'image': self.image.url
+        }
+
+class ImageForm(ModelForm):
+    class Meta:
+        model = Image
+        fields = '__all__'      
+
 class Amenity(models.Model):
     name = models.CharField(max_length=50)
     description = RichTextField(blank=True)
     active = models.BooleanField()
-    image = models.ImageField(blank=True, null=True, upload_to='images/amenity/')
+    image = models.ManyToManyField(Image,blank=True)
 
     def __str__(self):
         return self.name
 
     def serialize(self):
-        url = ''
-        if (self.image):
-            url = self.image.url
+        image = []
+        if self.image.count() != 0:
+            for x in self.image.all():
+                image.append({'pk':x.pk,'name':x.image.name})
         return {
             'pk': self.pk,
             'name': self.name,
             'description': self.description,
             'active' :self.active,
-            'image' : url,
+            'image':image,
         }
 
 class AmenityForm(ModelForm):
     class Meta:
         model = Amenity
         fields = '__all__'
+        exclude = ['image']
 
 class Room_Type(models.Model):
     title = models.CharField(max_length=50)
@@ -43,15 +77,16 @@ class Room_Type(models.Model):
     base_price = models.IntegerField()
     additional_person_price = models.IntegerField()
     extra_bed_price = models.IntegerField()
-    image = models.ImageField(blank=True, null=True, upload_to='images/room_types/')
+    image = models.ManyToManyField(Image,blank=True)
 
     def __str__(self):
         return self.title
 
     def serialize(self):
-        url = ''
-        if (self.image):
-            url = self.image.url
+        image = []
+        if self.image.count() != 0:
+            for x in self.image.all():
+                image.append({'pk':x.pk,'name':x.image.name})
         amenities = []
         if self.amenities.count() != 0:
             for x in self.amenities.all():
@@ -70,7 +105,7 @@ class Room_Type(models.Model):
             'base_price': self.base_price,
             'additional_person_price': self.additional_person_price,
             'extra_bed_price': self.extra_bed_price,
-            'image': url,
+            'image': image,
         }
 
 def get_my_choices():
@@ -80,15 +115,16 @@ def get_my_choices():
     return available_choices
 
 class Room_TypeForm(ModelForm):
-
     amenities = forms.MultipleChoiceField(
         widget= forms.CheckboxSelectMultiple,
-        choices= get_my_choices
+        choices= get_my_choices,
+        required=False
     )
         
     class Meta:
         model = Room_Type
         fields = '__all__'
+        exclude = ['image']
 
 class Floor(models.Model):
     name = models.CharField(max_length=50)

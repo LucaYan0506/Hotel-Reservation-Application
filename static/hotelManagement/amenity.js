@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', () =>{
     load();
 })
 
+document.querySelector('#add-image').onclick = () => {
+    myWindow = window.open('http://127.0.0.1:8000/admin/image/','popUpWindow','height=500,width=400,left=100,top=100');
+};
+
 document.querySelector('#search-bar').addEventListener('keypress', e => {
     if (e.key == 'Enter'){
         start = 1;
@@ -16,21 +20,15 @@ document.querySelector('form').onsubmit = () =>{
     return validation(document.querySelector('form'));
 };
 
-document.querySelector('#form-container #id_image').addEventListener('change', () =>{
-    const [file] = document.querySelector('#form-container #id_image').files
-    if (file) {
-        document.querySelector('form img').src =  URL.createObjectURL(file)
-    }
-})
-
-
 function show_amenityForm(){
     document.querySelector('#table-container').style.display = 'none';   
     document.querySelector('#form-container').style.display = 'block';   
 }
 
 function hide_amenityForm(){
-    location.reload('/admin/amenity/')
+    if (typeof myWindow !== 'undefined')
+        myWindow.close();
+    location.reload();
 }
 
 function create_row(amenity,i){
@@ -179,8 +177,12 @@ function view_amenity(pk){
         editor.setData(amenity.description)
         editor.setReadOnly(true);
 
-        document.querySelector('#form-container img').src = amenity.image;
-        document.querySelector('#form-container #id_image').disabled = true;
+        amenity.image.forEach(image => {
+            const option = document.createElement('option');
+            option.value = image.pk;
+            option.innerHTML = image.name;
+            document.querySelector('form #id_image').append(option);
+        })
     })
     
     document.querySelectorAll('.btn').forEach(x => {x.style.display = 'none'})
@@ -215,7 +217,12 @@ function edit_amenity(pk){
 
         editor.setData(amenity.description)
 
-        document.querySelector('#form-container img').src = amenity.image;
+        amenity.image.forEach(image => {
+            const option = document.createElement('option');
+            option.value = image.pk;
+            option.innerHTML = image.name;
+            document.querySelector('form #id_image').append(option);
+        })
     })
 
     const input = document.querySelector('input');
@@ -240,7 +247,9 @@ function delete_amenity(pk){
 function validation(elem){
     const data = new FormData(elem);
     data.append('description', editor.getData())
-    
+    document.querySelectorAll('#id_image option').forEach(elem =>{
+        data.append('image', parseInt(elem.value));
+    })
     fetch(elem.action,{
         method: 'POST',
         header: {

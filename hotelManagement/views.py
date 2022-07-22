@@ -36,6 +36,80 @@ def logout_view(request):
 
 
 
+def imageView(request):
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/image.html',{
+            'form': ImageForm(),
+            'folders': ImageFolder.objects.all()
+        })
+    return HttpResponseRedirect(reverse('login'))
+
+def add_image(request):
+    if request.method == 'POST':
+        if request.POST['folder'] == '-1':
+            #create new folder
+            new_folder = ImageFolder.objects.create(name=request.POST['folder_name'])
+            new_folder.save()
+            image = Image(folder=new_folder)
+            image.image = request.FILES['image']
+            image.save()
+            return JsonResponse({
+            'Result':'Succeed',
+            },
+            safe=False)
+        formset = ImageForm(request.POST,request.FILES)
+        if formset.is_valid():
+            formset.save()
+            return JsonResponse({
+            'Result':'Succeed',
+            },
+            safe=False)
+
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+
+    
+    return HttpResponse('Make sure that you send a post request')
+
+def get_image(request):
+    if (request.GET.get('pk')):
+        image = Image.objects.get(pk = request.GET.get('pk'))
+        return JsonResponse(image.serialize(), safe=False)
+
+
+    start = int(request.GET.get('start') or 1)
+    end = int(request.GET.get('end') or start + 4)
+
+    data = Image.objects.all()
+
+    #if user want specific room type
+    if request.GET.get('contain'):
+        data =  Image.objects.filter(title__icontains=request.GET.get('contain')).all()
+
+    #get from start to end posts
+    data2 = []
+    index = 1
+    for x in data:
+        if index >= start  and index <= end:
+            data2.append(x)
+        index += 1
+
+    return JsonResponse({
+        'total_image':data.count(),
+        'image':[x.serialize() for x in data2]
+        },safe=False)
+
+def delete_image(request):
+    Image.objects.get(pk = request.GET.get('pk')).delete()
+
+    return HttpResponseRedirect(reverse('image'))
+
+
+
+
 def room_typeView(request):
     if request.user.is_authenticated:
         return render(request,'hotelManagement/roomType.html',{
@@ -45,9 +119,12 @@ def room_typeView(request):
 
 def add_room_type(request):
     if request.method == 'POST':
-        formset = Room_TypeForm(request.POST,request.FILES)
+        formset = Room_TypeForm(request.POST)
         if formset.is_valid():
             formset.save()
+            room_type = Room_Type.objects.last()
+            for x in request.POST.getlist('image'):
+                room_type.image.add(Image.objects.get(pk = x))
             return JsonResponse({
             'Result':'Succeed',
             },
@@ -94,17 +171,19 @@ def update_room_type(request):
     if request.method == 'POST':
         data = request.POST
         room_type = Room_Type.objects.get(pk = data['pk'])
-        oldImage = room_type.image
         formset = Room_TypeForm(request.POST,request.FILES)
+
         if formset.is_valid():
             for key in data:
-                if key != 'amenities':
+                if key != 'amenities' and key != 'image':
                     setattr(room_type, key, data[key])
-            if 'image' in request.FILES:
-                room_type.image = request.FILES['image']
-            else:
-                room_type.image = oldImage
+
+            room_type.image.clear()
+            for x in data.getlist('image'):
+                room_type.image.add(Image.objects.get(pk = x))
+
             room_type.description = data['description']
+
             room_type.amenities.clear()
             for x in data.getlist('amenities'):
                 room_type.amenities.add(Amenity.objects.get(pk = x))
@@ -236,6 +315,11 @@ def add_amenity(request):
         if formset.is_valid():
             formset.active = "active" in request.POST
             formset.save()
+
+            amenity = Amenity.objects.last()
+            for x in request.POST.getlist('image'):
+                amenity.image.add(Image.objects.get(pk = x))
+
             return JsonResponse({
             'Result':'Succeed',
             },
@@ -283,17 +367,14 @@ def update_amenity(request):
         data = request.POST
         formset = AmenityForm(request.POST)
         amenity = Amenity.objects.get(pk = data['pk'])
-        oldImage = amenity.image 
         if formset.is_valid():
             for key in data:
-                setattr(amenity, key, data[key])
+                if key != 'image':
+                    setattr(amenity, key, data[key])
 
-            if 'image' in request.FILES:
-                amenity.image = request.FILES['image']
-            else:
-                amenity.image = oldImage
-            amenity.active = "active" in data
-            amenity.save()
+            amenity.image.clear()
+            for x in data.getlist('image'):
+                amenity.image.add(Image.objects.get(pk = x))
 
             return JsonResponse({'Result':'Succeed',},safe=False)
                         
@@ -484,7 +565,6 @@ def add_housekeeping(request):
 def update_housekeeping(request):
     if request.method == 'POST':
         data = request.POST
-        print(data)
         formset = HousekeepingForm(request.POST)
         housekeeping = Housekeeping.objects.get(pk = data['pk'])
         if formset.is_valid():
@@ -527,6 +607,9 @@ def add_employees(request):
             employee = Employee.objects.last()
             for x in list(request.POST['position']):
                 employee.user_permission.add(User_permission.objects.get(pk = x))
+            employee.set_password(request.POST['password'])
+            employee.confirm_password=employee.password,
+
             employee.save()
             return JsonResponse({
             'Result':'Succeed',
@@ -853,10 +936,8 @@ def update_housekeepingStatus(request):
             housekeeping.name = data['name']
             housekeeping.description = data['description']
             if 'active' in data:
-                print(data['active'])
                 housekeeping.active = True
             else:
-                print(False)
                 housekeeping.active = False 
 
             housekeeping.save()

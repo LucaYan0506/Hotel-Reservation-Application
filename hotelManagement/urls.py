@@ -6,6 +6,11 @@ urlpatterns = [
     path('login/',views.loginView, name="login"),
     path('logout/',views.logout_view, name="logout"),
 
+    path('image/',views.imageView, name="image"),
+    path('image/add/',views.add_image, name="add_image"),
+    path('image/info/',views.get_image, name="get_image"),
+    path('image/delete/',views.delete_image, name="delete_image"),
+
     path('room_types/',views.room_typeView, name="room_types"),
     path('room_types/form/',views.add_room_type, name="add_room_type"),
     path('room_types/info/',views.get_room_type, name="get_root_type"),
@@ -34,7 +39,6 @@ urlpatterns = [
     path('room/housekeeping/info/',views.get_housekeeping, name="get_housekeeping"),
     path('room/housekeeping/update/',views.update_housekeeping, name="update_housekeeping"),
     path('room/housekeeping/delete/',views.delete_housekeeping, name="delete_housekeeping"),
-
 
     path('employees/',views.employeesView, name="employees"),
     path('employees/form/',views.add_employees, name="add_employees"),
