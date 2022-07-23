@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ModelForm
 from django import forms
-from pkg_resources import require
 from ckeditor.fields import RichTextField 
 
 # Create your models here.
@@ -751,6 +750,11 @@ class EmployeeForm(ModelForm):
     class Meta:
         model = Employee
         fields = ['title','gender','first_name','last_name','username','email','password','confirm_password','date_of_birth','country_calling_code','phone_number', 'department', 'position', 'country', 'city', 'address', 'image']
+        widgets = {
+            'password':forms.TextInput(attrs={'type':'password'}),
+            'confirm_password':forms.TextInput(attrs={'type':'password'}),
+            'date_of_birth':forms.TextInput(attrs={'type':'date'}),
+        }
 
 class HousekeepingStatus(models.Model):
     name = models.CharField(max_length=255)
@@ -792,3 +796,50 @@ class HousekeepingForm(ModelForm):
     class Meta:
         model = Housekeeping
         fields = '__all__'
+
+class Hall_Type(models.Model):
+    title = models.CharField(max_length=50)
+    short_code = models.CharField(max_length=25)
+    description = RichTextField(blank=True)
+    base_occupancy = models.IntegerField()
+    max_occupancy = models.IntegerField()
+    amenities = models.ManyToManyField(Amenity, blank=True)
+    base_price = models.IntegerField()
+    image = models.ManyToManyField(Image,blank=True)
+
+    def __str__(self):
+        return self.title
+
+    def serialize(self):
+        image = []
+        if self.image.count() != 0:
+            for x in self.image.all():
+                image.append({'pk':x.pk,'name':x.image.name})
+        amenities = []
+        if self.amenities.count() != 0:
+            for x in self.amenities.all():
+                if x.active:
+                    amenities.append(x.pk)
+        return {
+            'pk': self.pk,
+            'title': self.title, 
+            'short_code': self.short_code,
+            'description': self.description,
+            'base_occupancy': self.base_occupancy,
+            'max_occupancy': self.max_occupancy,
+            'amenities': amenities,
+            'base_price': self.base_price,
+            'image': image,
+        }
+
+class Hall_TypeForm(ModelForm):
+    amenities = forms.MultipleChoiceField(
+        widget= forms.CheckboxSelectMultiple,
+        choices= get_my_choices,
+        required=False
+    )
+        
+    class Meta:
+        model = Hall_Type
+        fields = '__all__'
+        exclude = ['image']

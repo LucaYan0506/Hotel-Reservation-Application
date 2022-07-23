@@ -1,0 +1,63 @@
+{% extends 'hotelManagement/layout.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'hotelManagement/hall_type.css' %}">
+{% endblock head %}
+
+{% block body %}
+    <h1>Hall Types</h1>
+
+    <div id="table-container">
+        <p style="padding:0;margin-top:0;">Hall Types</p>
+        <button onclick="show_hallTypesForm()" class="btn" id="new-hall-types"><b>+ </b>Add</button>
+        <div style="clear: both;"></div>
+        <div id="search-bar-container">
+            Search:
+            <input type="text" id="search-bar"></input>
+        </div>
+
+        <div style="width: 50%; display:inline-block">
+          Show 
+          <select onchange="start=1;load()" style="padding:5px 10px;" name="" id="">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+          </select> 
+          entries
+      </div>
+        <div style="width: 100%; overflow: auto;">
+          <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Short Code</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+               
+              </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="form-container" style="font-size:18px;display: none;">
+        <form action="/admin/hall_types/form/" enctype="multipart/form-data" method="POST">
+          {% csrf_token %}
+          {{ form }}
+          <label for="id_image">Image:</label>
+          <div name="image" id="id_image" style="">
+          </div>
+          <input readonly type="text" class="btn" id="add-image" style="cursor: pointer;color: #fff;background-color: #0782c1;border-color: #0782c1; margin-left: 200px;" value="Add Image">
+          <button class="btn" style=" color: #fff;background-color: #28a745;border-color: #28a745;float: right; width: calc(50% - 10px);">Add</button>
+        </form>
+        <button onclick="hide_hallTypesForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
+    </div>
+
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+    <script type="text/javascript" src="{% static "hotelManagement/hall_type.js" %}"></script>
+{% endblock body %}

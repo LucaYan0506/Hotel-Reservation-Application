@@ -63,4 +63,10 @@ urlpatterns = [
     path('housekeepingStatus/info/',views.get_housekeepingStatus, name="get_housekeepingStatus"),
     path('housekeepingStatus/update/',views.update_housekeepingStatus, name="update_housekeepingStatus"),
     path('housekeepingStatus/delete/',views.delete_housekeepingStatus, name="delete_housekeepingStatus"),
+
+    path('hall_types/',views.hall_typeView, name="hall_types"),
+    path('hall_types/form/',views.add_hall_type, name="add_hall_types"),
+    path('hall_types/info/',views.get_hall_type, name="get_hall_types"),
+    path('hall_types/update/',views.update_hall_type, name="update_hall_types"),
+    path('hall_types/delete/',views.delete_hall_type, name="delete_hall_types"),
 ]

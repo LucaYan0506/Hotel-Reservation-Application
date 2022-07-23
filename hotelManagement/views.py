@@ -488,6 +488,8 @@ def delete_room(request):
 
     return HttpResponseRedirect(reverse('room'))
 
+
+
 def room_housekeepingView(request):
     id = request.GET.get('id') or None
     if request.user.is_authenticated:
@@ -957,3 +959,99 @@ def delete_housekeepingStatus(request):
     HousekeepingStatus.objects.get(pk = request.GET.get('pk')).delete()
 
     return HttpResponseRedirect(reverse('housekeeping'))
+
+
+
+def hall_typeView(request):
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/hall_type.html',{
+            'form': Hall_TypeForm(),
+        })
+    return HttpResponseRedirect(reverse('login'))
+
+def add_hall_type(request):
+    if request.method == 'POST':
+        formset = Hall_TypeForm(request.POST)
+        if formset.is_valid():
+            formset.save()
+            hall_type = Hall_Type.objects.last()
+            for x in request.POST.getlist('image'):
+                hall_type.image.add(Image.objects.get(pk = x))
+            return JsonResponse({
+            'Result':'Succeed',
+            },
+            safe=False)
+
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+
+    
+    return HttpResponse('Make sure that you send a post request')
+
+def get_hall_type(request):
+    if (request.GET.get('pk')):
+        hall_type = Hall_Type.objects.get(pk = request.GET.get('pk'))
+        return JsonResponse(hall_type.serialize(), safe=False)
+
+
+    start = int(request.GET.get('start') or 1)
+    end = int(request.GET.get('end') or start + 4)
+
+    data = Hall_Type.objects.all()
+
+    #if user want specific room type
+    if request.GET.get('contain'):
+        data =  Hall_Type.objects.filter(title__icontains=request.GET.get('contain')).all()
+
+    #get from start to end posts
+    data2 = []
+    index = 1
+    for x in data:
+        if index >= start  and index <= end:
+            data2.append(x)
+        index += 1
+
+    return JsonResponse({
+        'total_hall_type':data.count(),
+        'hall_type':[x.serialize() for x in data2]
+        },safe=False)
+
+def update_hall_type(request):
+    if request.method == 'POST':
+        data = request.POST
+        hall_type = Hall_Type.objects.get(pk = data['pk'])
+        formset = Hall_TypeForm(request.POST,request.FILES)
+
+        if formset.is_valid():
+            for key in data:
+                if key != 'amenities' and key != 'image':
+                    setattr(hall_type, key, data[key])
+
+            hall_type.image.clear()
+            for x in data.getlist('image'):
+                hall_type.image.add(Image.objects.get(pk = x))
+
+            hall_type.description = data['description']
+
+            hall_type.amenities.clear()
+            for x in data.getlist('amenities'):
+                hall_type.amenities.add(Amenity.objects.get(pk = x))
+            hall_type.save()
+            return JsonResponse({'Result':'Succeed',},safe=False)
+                        
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+        
+    return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
+
+def delete_hall_type(request):
+    Hall_Type.objects.get(pk = request.GET.get('pk')).delete()
+
+    return HttpResponseRedirect(reverse('hall_types'))
+
