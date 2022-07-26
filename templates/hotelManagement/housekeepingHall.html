@@ -1,0 +1,101 @@
+{% extends 'hotelManagement/layout.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'hotelManagement/housekeepingHall.css' %}">
+{% endblock head %}
+
+{% block body %}
+    <h1>Housekeeping</h1>
+
+    <div id="table-container">
+        <p style="padding:0;margin-top:0;">Housekeeping</p>
+        <button onclick="show_housekeepingForm()" class="btn" id="new-housekeeping"><b>+ </b>Add</button>
+        <div style="clear: both;"></div>
+        <div id="filter">
+
+          <div id="custom-select-container" data-name="assigned_to">
+            <div class="custom-select" onclick="show_hide_sub_menu(this)" style="cursor: pointer;">
+                Assigned to 
+                <i class="material-icons" style="float:right; width: 20px;color:black" >arrow_drop_downs</i>
+            </div>
+    
+            <div data-selected-item="0" class="" id="sub-menu" style="display: none;">
+                {%for employee in employees%}
+                  <label for="id_{{employee.username}}"><input type="checkbox" value="{{employee.id}}" id="id_{{employee.username}}">{{employee.username}} ({{employee.id}})</label>
+                {% endfor %}
+            </div>
+          </div>
+
+          
+          <div id="custom-select-container" data-name="hall_number">
+            <div class="custom-select" onclick="show_hide_sub_menu(this)" style="cursor: pointer;">
+                Hall number
+                <i class="material-icons" style="float:right; width: 20px;color:black" >arrow_drop_downs</i>
+            </div>
+    
+            <div data-selected-item="0" class="" id="sub-menu" style="display: none;">
+                {%for hall in halls%}
+                  <label for="id_{{hall.hall_number}}"><input type="checkbox" value="{{hall.hall_number}}" id="id_{{hall.hall_number}}">{{hall.hall_number}}</label>
+                {% endfor %}
+            </div>
+          </div>
+
+          <div id="custom-select-container" data-name="housekeeping_status">
+            <div class="custom-select" onclick="show_hide_sub_menu(this)" style="cursor: pointer;">
+                Housekeeping status
+                <i class="material-icons" style="float:right; width: 20px;color:black" >arrow_drop_downs</i>
+            </div>
+    
+            <div data-selected-item="0" class="" id="sub-menu" style="display: none;">
+              {%for housekeeping_status in housekeeping_statuses%}
+                <label for="id_{{housekeeping_status.name}}"><input type="checkbox" value="{{housekeeping_status.pk}}" id="id_{{housekeeping_status.name}}">{{housekeeping_status.name}}</label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <button class="btn" id="search" style="background: #489ad9; color:white; display: inline-flex;">  <i class="material-icons">search</i>Search</button>
+        </div>
+
+        <div style="width: 50%; display:inline-block">
+          Show 
+          <select id="entries" onchange="start=1;load()" name="" id="">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+          </select> 
+          entries
+      </div>
+        <div style="width: 100%; overflow: auto;">
+          <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Hall number</th>
+                  <th scope="col">Housekeeping status</th>
+                  <th scope="col">Assigned to</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+               
+              </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="form-container" style="font-size:18px;display: none;">
+        <form action="/admin/hall/housekeeping/form/" method="POST">
+          {% csrf_token %}
+          {{ form }}
+          <button class="btn" style=" color: #fff;background-color: #28a745;border-color: #28a745;float: right; width: calc(50% - 10px);;">Add</button>
+        </form>
+        <button onclick="hide_housekeepingForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
+    </div>
+
+    <script type="text/javascript" src="{% static "hotelManagement/housekeepingHall.js" %}"></script>
+    <script>
+      let hall_id = "{{id}}";
+    </script>
+{% endblock body %}

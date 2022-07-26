@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded',() => {
         document.querySelector(`div[data-image_pk="${elem.value}"]`).click();
     })
     const option = document.createElement('option');
-    option.innerHTML = "new folder";
+    option.innerHTML = "create a new folder";
     option.value = -1;
     document.querySelector('form #id_folder').append(option);
 })

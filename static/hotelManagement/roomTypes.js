@@ -190,9 +190,6 @@ function view_roomType(pk){
         document.querySelector('#form-container #id_extra_bed').value = room_type.extra_bed;
         document.querySelector('#form-container #id_extra_bed').disabled = true;
 
-        document.querySelector('#form-container #id_kids_occupancy').value = room_type.kids_occupancy;
-        document.querySelector('#form-container #id_kids_occupancy').disabled = true;
-
         document.querySelectorAll('#id_amenities input').forEach((x = 0) => {
             x.checked = room_type.amenities.includes(parseInt(x.value));
             x.disabled = true;
@@ -201,8 +198,11 @@ function view_roomType(pk){
         document.querySelector('#form-container #id_base_price').value = room_type.base_price;
         document.querySelector('#form-container #id_base_price').disabled = true;
 
-        document.querySelector('#form-container #id_additional_person_price').value = room_type.additional_person_price;
-        document.querySelector('#form-container #id_additional_person_price').disabled = true;
+        document.querySelector('#form-container #id_additional_price_per_person').value = room_type.additional_price_per_person;
+        document.querySelector('#form-container #id_additional_price_per_person').disabled = true;
+
+        document.querySelector('#form-container #id_additional_price_per_kid').value = room_type.additional_price_per_kid;
+        document.querySelector('#form-container #id_additional_price_per_kid').disabled = true;
 
         document.querySelector('#form-container #id_extra_bed_price').value = room_type.extra_bed_price;
         document.querySelector('#form-container #id_extra_bed_price').disabled = true;
@@ -255,15 +255,15 @@ function edit_roomType(pk){
 
         document.querySelector('#form-container #id_extra_bed').value = room_type.extra_bed;
 
-        document.querySelector('#form-container #id_kids_occupancy').value = room_type.kids_occupancy;
-
         document.querySelectorAll('#id_amenities input').forEach((x, i = 0) => {
             x.checked = room_type.amenities.includes(parseInt(x.value));
         })
 
         document.querySelector('#form-container #id_base_price').value = room_type.base_price;
 
-        document.querySelector('#form-container #id_additional_person_price').value = room_type.additional_person_price;
+        document.querySelector('#form-container #id_additional_price_per_person').value = room_type.additional_price_per_person;
+
+        document.querySelector('#form-container #id_additional_price_per_kid').value = room_type.additional_price_per_kid;
 
         document.querySelector('#form-container #id_extra_bed_price').value = room_type.extra_bed_price;
 
@@ -275,9 +275,9 @@ function edit_roomType(pk){
         })
     })
 
-    const input = document.querySelector('input');
+    const input = document.createElement('input');
     input.value = pk;
-    input.style.display = 'none';
+    input.type = 'hidden';
     input.id = 'id_pk';
     input.name = 'pk';
     document.querySelector('form').append(input);

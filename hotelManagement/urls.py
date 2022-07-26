@@ -69,4 +69,19 @@ urlpatterns = [
     path('hall_types/info/',views.get_hall_type, name="get_hall_types"),
     path('hall_types/update/',views.update_hall_type, name="update_hall_types"),
     path('hall_types/delete/',views.delete_hall_type, name="delete_hall_types"),
+
+    path('hall/',views.hallView, name="hall"),
+    path('hall/form/',views.add_hall, name="add_hall"),
+    path('hall/info/',views.get_hall, name="get_hall"),
+    path('hall/update/',views.update_hall, name="update_hall"),
+    path('hall/delete/',views.delete_hall, name="delete_hall"),
+    path('hall/housekeeping/',views.housekeeping_hallView, name="housekeeping_hall"),
+    path('hall/housekeeping/form/',views.add_housekeeping_hall, name="add_housekeeping_hall"),
+    path('hall/housekeeping/info/',views.get_housekeeping_hall, name="get_housekeeping_hall"),
+    path('hall/housekeeping/update/',views.update_housekeeping_hall, name="update_housekeeping_hall"),
+    path('hall/housekeeping/delete/',views.delete_housekeeping_hall, name="delete_housekeeping_hall"),
+
+    path('priceManager/',views.priceManagerView, name="priceManager"),
+    path('priceManager/info/',views.get_priceManager, name="get_priceManager"),
+    path('priceManager/update/',views.update_priceManager, name="update_priceManager"),
 ]

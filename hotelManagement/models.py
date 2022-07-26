@@ -11,13 +11,11 @@ class ImageFolder(models.Model):
     def __str__(self):
         return self.name
 
-def upload_path(instance,title):
-    print(title)
-    name = instance.folder.name
-    return f'{name}/{title}'
-    
-
 class Image(models.Model):
+    def upload_path(instance,title):
+        name = instance.folder.name
+        return f'{name}/{title}'
+
     folder = models.ForeignKey(ImageFolder, on_delete=models.CASCADE)
     image = models.ImageField(blank=True, null=True, upload_to=upload_path)
 
@@ -71,12 +69,36 @@ class Room_Type(models.Model):
     base_occupancy = models.IntegerField()
     max_occupancy = models.IntegerField()
     extra_bed = models.IntegerField()
-    kids_occupancy = models.IntegerField()
     amenities = models.ManyToManyField(Amenity, blank=True)
     base_price = models.IntegerField()
-    additional_person_price = models.IntegerField()
+    additional_price_per_person = models.IntegerField()
+    additional_price_per_kid = models.IntegerField()
     extra_bed_price = models.IntegerField()
     image = models.ManyToManyField(Image,blank=True)
+    mon = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    tue = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    wed = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    thu = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    fri = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    sat = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    sun = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    
+    def save(self, *args, **kwargs):
+        if self.mon == -1:
+            self.mon = self.base_price
+        if self.tue == -1:
+            self.tue = self.base_price
+        if self.wed == -1:
+            self.wed = self.base_price
+        if self.thu == -1:
+            self.thu = self.base_price
+        if self.fri == -1:
+            self.fri = self.base_price
+        if self.sat == -1:
+            self.sat = self.base_price
+        if self.sun == -1:
+            self.sun = self.base_price
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -99,14 +121,27 @@ class Room_Type(models.Model):
             'base_occupancy': self.base_occupancy,
             'max_occupancy': self.max_occupancy,
             'extra_bed' : self.extra_bed,
-            'kids_occupancy': self.kids_occupancy,
             'amenities': amenities,
             'base_price': self.base_price,
-            'additional_person_price': self.additional_person_price,
+            'additional_price_per_person': self.additional_price_per_person,
+            'additional_price_per_kid': self.additional_price_per_kid,
             'extra_bed_price': self.extra_bed_price,
             'image': image,
         }
 
+    def serializePrice(self):
+        return {
+            'pk':self.pk,
+            'title':self.title,
+            'mon':self.mon,
+            'tue':self.tue,
+            'wed':self.wed,
+            'thu':self.thu,
+            'fri':self.fri,
+            'sat':self.sat,
+            'sun':self.sun,
+            'type':'Room_Type'
+        }
 def get_my_choices():
     available_choices = []
     for x in Amenity.objects.filter(active=True).all():
@@ -123,7 +158,7 @@ class Room_TypeForm(ModelForm):
     class Meta:
         model = Room_Type
         fields = '__all__'
-        exclude = ['image']
+        exclude = ['image','mon','tue','wed','thu','fri','sat','sun']
 
 class Floor(models.Model):
     name = models.CharField(max_length=50)
@@ -777,7 +812,7 @@ class HousekeepingStatusForm(ModelForm):
         model = HousekeepingStatus
         fields = '__all__'
 
-class Housekeeping(models.Model):
+class HousekeepingForRoom(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     housekeeping_status = models.ForeignKey(HousekeepingStatus, on_delete=models.CASCADE)
     assign_to = models.ForeignKey(Employee, on_delete=models.CASCADE)    
@@ -792,9 +827,9 @@ class Housekeeping(models.Model):
             'assigned_to': {'pk':self.assign_to.pk,'value':self.assign_to.username},
         }
 
-class HousekeepingForm(ModelForm):
+class HousekeepingForRoomForm(ModelForm):
     class Meta:
-        model = Housekeeping
+        model = HousekeepingForRoom
         fields = '__all__'
 
 class Hall_Type(models.Model):
@@ -806,6 +841,30 @@ class Hall_Type(models.Model):
     amenities = models.ManyToManyField(Amenity, blank=True)
     base_price = models.IntegerField()
     image = models.ManyToManyField(Image,blank=True)
+    mon = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    tue = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    wed = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    thu = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    fri = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    sat = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    sun = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    
+    def save(self, *args, **kwargs):
+        if self.mon == -1:
+            self.mon = self.base_price
+        if self.tue == -1:
+            self.tue = self.base_price
+        if self.wed == -1:
+            self.wed = self.base_price
+        if self.thu == -1:
+            self.thu = self.base_price
+        if self.fri == -1:
+            self.fri = self.base_price
+        if self.sat == -1:
+            self.sat = self.base_price
+        if self.sun == -1:
+            self.sun = self.base_price
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -832,6 +891,20 @@ class Hall_Type(models.Model):
             'image': image,
         }
 
+    def serializePrice(self):
+        return {
+            'pk':self.pk,
+            'title':self.title,
+            'mon':self.mon,
+            'tue':self.tue,
+            'wed':self.wed,
+            'thu':self.thu,
+            'fri':self.fri,
+            'sat':self.sat,
+            'sun':self.sun,
+            'type':'Hall_Type'
+        }
+
 class Hall_TypeForm(ModelForm):
     amenities = forms.MultipleChoiceField(
         widget= forms.CheckboxSelectMultiple,
@@ -842,4 +915,48 @@ class Hall_TypeForm(ModelForm):
     class Meta:
         model = Hall_Type
         fields = '__all__'
-        exclude = ['image']
+        exclude = ['image','mon','tue','wed','thu','fri','sat','sun']
+
+
+class Hall(models.Model):
+    hall_type = models.ForeignKey(Hall_Type, on_delete=models.CASCADE)
+    floor = models.ForeignKey(Floor,on_delete=models.CASCADE)
+    hall_number = models.IntegerField(unique=True)
+
+    def __str__(self):
+        return str(self.hall_number)
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'hall_type': self.hall_type.title,
+            'hall_type_pk': self.hall_type.pk,
+            'floor': f'{self.floor.number} - {self.floor.name}',
+            'floor_pk': self.floor.pk,
+            'hall_number': self.hall_number,
+        }
+
+class HallForm(ModelForm):
+    class Meta:
+        model = Hall
+        fields = '__all__'
+
+class HousekeepingForHall(models.Model):
+    hall = models.ForeignKey(Hall, on_delete=models.CASCADE)
+    housekeeping_status = models.ForeignKey(HousekeepingStatus, on_delete=models.CASCADE)
+    assign_to = models.ForeignKey(Employee, on_delete=models.CASCADE)    
+    def __str__(self):
+        return str(self.pk)
+    
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'hall': {'pk':self.hall.pk,'value': self.hall.hall_number},
+            'housekeeping_status': {'pk':self.housekeeping_status.pk,'value':self.housekeeping_status.name},
+            'assigned_to': {'pk':self.assign_to.pk,'value':self.assign_to.username},
+        }
+
+class HousekeepingForHallForm(ModelForm):
+    class Meta:
+        model = HousekeepingForHall
+        fields = '__all__'
