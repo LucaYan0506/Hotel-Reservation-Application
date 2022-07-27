@@ -84,4 +84,10 @@ urlpatterns = [
     path('priceManager/',views.priceManagerView, name="priceManager"),
     path('priceManager/info/',views.get_priceManager, name="get_priceManager"),
     path('priceManager/update/',views.update_priceManager, name="update_priceManager"),
+
+    path('services/',views.servicesView, name="services"),
+    path('services/form/',views.add_services, name="add_services"),
+    path('services/info/',views.get_services, name="get_services"),
+    path('services/update/',views.update_services, name="update_services"),
+    path('services/delete/',views.delete_services, name="delete_services"),
 ]

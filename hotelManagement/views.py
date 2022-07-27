@@ -103,7 +103,9 @@ def get_image(request):
         },safe=False)
 
 def delete_image(request):
-    Image.objects.get(pk = request.GET.get('pk')).delete()
+    instance = Image.objects.get(pk = request.GET.get('pk'))
+    instance.image.delete(save=False)
+    instance.delete()
 
     return HttpResponseRedirect(reverse('image'))
 
@@ -369,13 +371,21 @@ def update_amenity(request):
         amenity = Amenity.objects.get(pk = data['pk'])
         if formset.is_valid():
             for key in data:
-                if key != 'image':
+                if key != 'image' and key != 'active':
                     setattr(amenity, key, data[key])
+
+            if 'active' in data:
+                amenity.active = True
+            else:
+                amenity.active = False
+
+            amenity.description = data['description']
 
             amenity.image.clear()
             for x in data.getlist('image'):
                 amenity.image.add(Image.objects.get(pk = x))
-
+            
+            amenity.save()
             return JsonResponse({'Result':'Succeed',},safe=False)
                         
         return JsonResponse({
@@ -1300,7 +1310,7 @@ def get_priceManager(request):
         index += 1
 
     return JsonResponse({
-        'total_price_Manager':room.count(),
+        'total_price_Manager':room.count() + hall.count(),
         'price_Manager':[x.serializePrice() for x in data2]
         },safe=False)
 
@@ -1324,3 +1334,95 @@ def update_priceManager(request):
         return JsonResponse({'Result':'Succeed',},safe=False)
 
     return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
+
+
+
+def servicesView(request):
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/services.html',{
+            'form': ServiceForm(),
+        })
+
+    return HttpResponseRedirect(reverse('login'))
+    
+def add_services(request):
+    if request.method == 'POST':
+        formset = ServiceForm(request.POST, request.FILES)
+        if formset.is_valid():
+            formset.active = "active" in request.POST
+            formset.save()
+
+            return JsonResponse({
+            'Result':'Succeed',
+            },
+            safe=False)
+
+        
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+
+    return HttpResponse('Make sure that you send a post request')
+
+def get_services(request):
+    if (request.GET.get('pk')):
+        services = Service.objects.get(pk = request.GET.get('pk'))
+        return JsonResponse(services.serialize(), safe=False)
+
+
+    start = int(request.GET.get('start') or 1)
+    end = int(request.GET.get('end') or start + 4)
+
+    data = Service.objects.all()
+
+    #if user want specific room type
+    if request.GET.get('contain'):
+        data =  Service.objects.filter(title__icontains=request.GET.get('contain')).all()
+
+    #get from start to end posts
+    data2 = []
+    index = 1
+    for x in data:
+        if index >= start  and index <= end:
+            data2.append(x)
+        index += 1
+
+    return JsonResponse({
+        'total_services':data.count(),
+        'services':[x.serialize() for x in data2]
+        },safe=False)
+
+def update_services(request):
+    if request.method == 'POST':
+        data = request.POST
+        print(data)
+        formset = ServiceForm(request.POST)
+        services = Service.objects.get(pk = data['pk'])
+        if formset.is_valid():
+            for key in data:
+                if key != 'active':
+                    setattr(services, key, data[key])
+
+            if 'active' in data:
+                services.active = True
+            else:
+                services.active = False
+
+            services.save()
+            return JsonResponse({'Result':'Succeed',},safe=False)
+                        
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+        
+
+    return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
+
+def delete_services(request):
+    Service.objects.get(pk = request.GET.get('pk')).delete()
+
+    return HttpResponseRedirect(reverse('services'))

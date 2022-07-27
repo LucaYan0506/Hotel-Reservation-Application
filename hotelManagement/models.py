@@ -960,3 +960,35 @@ class HousekeepingForHallForm(ModelForm):
     class Meta:
         model = HousekeepingForHall
         fields = '__all__'
+
+
+class Service(models.Model):
+    price_typeChoice = (
+        ('Per Person','Per Person'),
+        ('Per Night','Per Night'),
+        ('Fixed Price','Fixed Price'),
+    )
+    title = models.CharField(max_length=50)
+    price_type = models.CharField(max_length=256, choices=price_typeChoice)
+    price = models.DecimalField(max_digits=50, decimal_places=2)
+    active = models.BooleanField()
+    description = RichTextField(blank=True)
+
+    def __str__(self):
+        return str(self.title)
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'title': self.title,
+            'price_type': self.price_type,
+            'price': self.price,
+            'active': self.active,
+            'description': self.description,
+        }
+class ServiceForm(ModelForm):
+    class Meta:
+        model = Service
+        fields = '__all__'
+
+
