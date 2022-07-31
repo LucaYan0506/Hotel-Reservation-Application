@@ -1,3 +1,24 @@
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth < 600){
+        document.querySelector('#body').className = '';
+        document.querySelector('#menu').className = 'hide-600';
+    }
+})
+
+document.addEventListener('resize', () => {
+    if (window.innerWidth < 600){
+        document.querySelector('#body').className = '';
+        document.querySelector('#menu').className = 'hide';
+    }
+    else{
+        document.querySelector('#body').className = 'expand';
+        document.querySelector('#menu').className = 'show';
+    }
+
+        
+
+})
+
 function show_hideMenu(){
     const elem = document.querySelector('#menu');   
     

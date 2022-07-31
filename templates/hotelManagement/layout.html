@@ -12,7 +12,9 @@
 </head>
 <body>
     <div id="menu">
-        <div id="company-name">Company Name</div>
+        <div id="company-name">Company Name 
+            <i onclick="show_hideMenu()" class="humburger-menu material-icons" id="in-the-menu">menu</i>
+        </div>
         <div style="color: white; display: flex; align-items: center; padding: 10px; user-select: none;">
                 <div id="avatar" style="width: 60px; height: 60px;">
                     <img src="{% static 'images/logo/Unity game 3.jpg' %}" style="max-width:60px; max-height:60px" alt="avatar"> 
@@ -85,7 +87,7 @@
                         <li id="halls"><a href="{% url 'hall' %}">Halls</a></li>
                         <li id="price-manager"><a href="{% url 'priceManager' %}">Price Manager</a></li>
                         <li id="paid-services"><a href="{% url 'services' %}">Paid Services</a></li>
-                        <li id="coupon-management">Coupon Management</li>
+                        <li id="coupon-management"><a href="{% url 'coupon' %}">Coupon Management</a></li>
                         <li id="floors"><a href="{% url 'floor' %}">Floors</a></li>
                         <li id="amenities"><a href="{% url 'amenity' %}">Amenities</a></li>
                         <li id="housekeeping-status"><a href="{% url 'housekeepingStatus' %}">Housekeeping Status</a></li>
@@ -127,7 +129,7 @@
     
     <div id="body">
         <nav>
-            <i onclick="show_hideMenu()" class="material-icons" style="font-size: 50px;cursor:pointer;user-select:none;">menu</i>
+            <i onclick="show_hideMenu()" class="humburger-menu material-icons">menu</i>
             <div id="user">
                 <div id="avatar">
                     <img src="{% static 'images/logo/Unity game 3.jpg' %}" style="max-width:50px; max-height:50px" alt="avatar"> 

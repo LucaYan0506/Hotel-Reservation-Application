@@ -83,24 +83,6 @@ tr td:last-child {
     border-color: #28a745;
 }
 
-@media only screen and (max-width: 750px) {
-    .btn#new-amenity{
-        position: initial;
-        margin-bottom: 5px;
-    }
-    #search-bar-container{
-        position: initial;
-    }
-
-    #search-bar{
-        width: calc(100% - 80px);
-    }
-    #table-container p{
-        margin-bottom: 0;
-    }
-  }
-
-
 #form-container form input{
     padding: 5px 10px;
     width: 40%;
@@ -138,23 +120,13 @@ tr td:last-child {
     width: 40%!important;
 }
 
-@media only screen and (max-width: 1400px) {
-    #form-container form input{
-        width: calc(100% - 30px);
-        min-width: unset;
-        max-width: 810px;
-        margin-right: 0;
-    }
-    #form-container form label{
-        width: calc(100% - 20px);
-        min-width: unset;
-        display: block;
-    }
-    .django-ckeditor-widget{
-        width: calc(100% - 20px);
-        min-width: unset;
-    }
-  }
+#add-image{
+    cursor: pointer;
+    color: #fff;
+    background-color: #0782c1;
+    border-color: #0782c1;
+    margin-left: max(calc(10% + 5px),205px);
+}
 
 #btn-container {
     display: block;
@@ -186,4 +158,52 @@ tr td:last-child {
     height: 80px;
     overflow-y: scroll;
     overflow-x: auto;
+}
+
+@media only screen and (max-width: 1400px) {
+    #form-container form input{
+        width: calc(100% - 30px);
+        min-width: unset;
+        max-width: 810px;
+        margin-right: 0;
+    }
+    #form-container form label{
+        width: calc(100% - 20px);
+        min-width: unset;
+        display: block;
+    }
+    .django-ckeditor-widget{
+        width: calc(100% - 20px);
+        min-width: unset;
+    }
+    #id_image{
+        width: calc(100% - 30px);
+        min-width: unset;
+        max-width: 810px;
+        margin-right: 0;
+    }
+    #add-image{
+        margin-left: 0;
+    }
+  }
+
+@media only screen and (max-width: 800px) {
+    .btn#new-amenity{
+        position: initial;
+        margin-bottom: 5px;
+    }
+    #search-bar-container{
+        position: initial;
+    }
+
+    #search-bar{
+        width: calc(100% - 80px);
+    }
+    #table-container p{
+        margin-bottom: 0;
+    }
+    #id_image{
+        min-width: 0px;
+        width: calc(100% - 25px);
+    }
 }
