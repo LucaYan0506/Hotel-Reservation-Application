@@ -90,4 +90,10 @@ urlpatterns = [
     path('services/info/',views.get_services, name="get_services"),
     path('services/update/',views.update_services, name="update_services"),
     path('services/delete/',views.delete_services, name="delete_services"),
+
+    path('coupon/',views.couponView, name="coupon"),
+    path('coupon/form/',views.add_coupon, name="add_coupon"),
+    path('coupon/info/',views.get_coupon, name="get_coupon"),
+    path('coupon/update/',views.update_coupon, name="update_coupon"),
+    path('coupon/delete/',views.delete_coupon, name="delete_coupon"),
 ]

@@ -74,7 +74,7 @@ tr td:last-child {
     margin-right: 5px;
 }
 
-#new-employees{
+#new-coupon{
     position: absolute;
     right: 5px;
     top: 10px;
@@ -83,7 +83,7 @@ tr td:last-child {
     border-color: #28a745;
 }
 
-#form-container form input, #form-container form select, #form-container form textarea, .user-permission{
+#form-container form input, #id_coupon_type, .customer, .room-type, .hall-type{
     padding: 5px 10px;
     width: 40%;
     min-width: 450px;
@@ -94,14 +94,10 @@ tr td:last-child {
     vertical-align: top;
 }
 
-#form-container form input#id_active{
+#form-container form input#id_valid_only_once{
     width: 15px;
     min-width: unset;
     margin-right: calc(100% - 25px - max(10%, 200px));
-}
-
-#form-container form .helptext{
-    display: none;
 }
 
 #form-container form label{
@@ -124,6 +120,14 @@ tr td:last-child {
     width: 40%!important;
 }
 
+#add-image{
+    cursor: pointer;
+    color: #fff;
+    background-color: #0782c1;
+    border-color: #0782c1;
+    margin-left: max(calc(10% + 5px),205px);
+}
+
 #btn-container {
     display: block;
     width: 170px;
@@ -139,15 +143,24 @@ tr td:last-child {
     float:right;
 }
 
-#user-image{
-    display:block;
-    margin:10px;
-    width:100%;
-    max-width:200px;
-    margin-left: max(calc(10% + 5px),205px);
+#id_image{
+    display: inline-block;
+    padding: 5px 10px;
+    width: 40%;
+    min-width: 450px;
+    font-size: 18px;
+    margin-right: calc(50% - max(10%, 200px));
+    margin-bottom: 5px;
+    margin-top: 5px;
+    vertical-align: top;
+    border: 1px solid rgb(99 99 99);
+    border-radius: 2px;
+    height: 80px;
+    overflow-y: scroll;
+    overflow-x: auto;
 }
 
-.user-permission{
+.customer, .room-type, .hall-type{
     display: inline-block;
     width: calc(50% - max(200px,10%));
     min-width: unset;
@@ -155,7 +168,7 @@ tr td:last-child {
     margin-bottom: 15px;
 }
 
-.user-permission ul{
+.customer ul, .room-type ul, .hall-type ul{
     width: calc(100% - 10px);
     height:100px;
     overflow: auto;
@@ -163,30 +176,23 @@ tr td:last-child {
     border:solid 1px;
 }
 
-.user-permission li{
+.customer li, .room-type li, .hall-type li{
     list-style: none;
     user-select: none;
     width: max-content;
     cursor: pointer;
 }
 
-.user-permission li:hover {
+.customer li:hover, .room-type li:hover, .hall-type li:hover{
     background-color: gray;
 }
 
 @media only screen and (max-width: 1400px) {
-    #form-container form input, #form-container form select, #form-container form textarea, .user-permission{
-        width: calc(100% - 40px);
+    #form-container form input, #id_coupon_type, .customer, .room-type, .hall-type{
+        width: calc(100% - 30px);
         min-width: unset;
         max-width: 810px;
         margin-right: 0;
-    }
-    #user-image{
-        margin:0 10px;
-    }
-    .user-permission{
-        margin-bottom: 0;
-        width: calc(50% - 40px);
     }
     #form-container form label{
         width: calc(100% - 20px);
@@ -197,10 +203,24 @@ tr td:last-child {
         width: calc(100% - 20px);
         min-width: unset;
     }
+    #id_image{
+        width: calc(100% - 30px);
+        min-width: unset;
+        max-width: 810px;
+        margin-right: 0;
+    }
+    #add-image{
+        margin-left: 0;
+    }
+    .customer, .room-type, .hall-type{
+        margin-bottom: 0;
+        width: calc(50% - 40px);
+
+    }
   }
 
-  @media only screen and (max-width: 750px) {
-    .btn#new-amenity{
+@media only screen and (max-width: 800px) {
+    .btn#new-coupon{
         position: initial;
         margin-bottom: 5px;
     }
@@ -213,5 +233,9 @@ tr td:last-child {
     }
     #table-container p{
         margin-bottom: 0;
+    }
+    #id_image{
+        min-width: 0px;
+        width: calc(100% - 25px);
     }
   }

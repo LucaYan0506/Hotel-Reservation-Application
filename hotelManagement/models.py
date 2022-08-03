@@ -1,256 +1,14 @@
+from time import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ModelForm
 from django import forms
+from django.utils import timezone
 from ckeditor.fields import RichTextField 
+from datetime import datetime,timedelta
 
 # Create your models here.
-class ImageFolder(models.Model):
-    name = models.CharField(max_length=256, unique=True)
-
-    def __str__(self):
-        return self.name
-
-class Image(models.Model):
-    def upload_path(instance,title):
-        name = instance.folder.name
-        return f'{name}/{title}'
-
-    folder = models.ForeignKey(ImageFolder, on_delete=models.CASCADE)
-    image = models.ImageField(blank=True, null=True, upload_to=upload_path)
-
-    def __str__(self):
-            return self.image.name
-
-    def serialize(self):
-        return {
-            'pk': self.pk,
-            'folder': {'pk': self.folder.pk, 'name': self.folder.name},
-            'image': self.image.url
-        }
-
-class ImageForm(ModelForm):
-    class Meta:
-        model = Image
-        fields = '__all__'      
-
-class Amenity(models.Model):
-    name = models.CharField(max_length=50)
-    description = RichTextField(blank=True)
-    active = models.BooleanField()
-    image = models.ManyToManyField(Image,blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def serialize(self):
-        image = []
-        if self.image.count() != 0:
-            for x in self.image.all():
-                image.append({'pk':x.pk,'name':x.image.name})
-        return {
-            'pk': self.pk,
-            'name': self.name,
-            'description': self.description,
-            'active' :self.active,
-            'image':image,
-        }
-
-class AmenityForm(ModelForm):
-    class Meta:
-        model = Amenity
-        fields = '__all__'
-        exclude = ['image']
-
-class Room_Type(models.Model):
-    title = models.CharField(max_length=50)
-    short_code = models.CharField(max_length=25)
-    description = RichTextField(blank=True)
-    base_occupancy = models.IntegerField()
-    max_occupancy = models.IntegerField()
-    extra_bed = models.IntegerField()
-    amenities = models.ManyToManyField(Amenity, blank=True)
-    base_price = models.IntegerField()
-    additional_price_per_person = models.IntegerField()
-    additional_price_per_kid = models.IntegerField()
-    extra_bed_price = models.IntegerField()
-    image = models.ManyToManyField(Image,blank=True)
-    mon = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
-    tue = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
-    wed = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
-    thu = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
-    fri = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
-    sat = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
-    sun = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
-    
-    def save(self, *args, **kwargs):
-        if self.mon == -1:
-            self.mon = self.base_price
-        if self.tue == -1:
-            self.tue = self.base_price
-        if self.wed == -1:
-            self.wed = self.base_price
-        if self.thu == -1:
-            self.thu = self.base_price
-        if self.fri == -1:
-            self.fri = self.base_price
-        if self.sat == -1:
-            self.sat = self.base_price
-        if self.sun == -1:
-            self.sun = self.base_price
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.title
-
-    def serialize(self):
-        image = []
-        if self.image.count() != 0:
-            for x in self.image.all():
-                image.append({'pk':x.pk,'name':x.image.name})
-        amenities = []
-        if self.amenities.count() != 0:
-            for x in self.amenities.all():
-                if x.active:
-                    amenities.append(x.pk)
-        return {
-            'pk': self.pk,
-            'title': self.title, 
-            'short_code': self.short_code,
-            'description': self.description,
-            'base_occupancy': self.base_occupancy,
-            'max_occupancy': self.max_occupancy,
-            'extra_bed' : self.extra_bed,
-            'amenities': amenities,
-            'base_price': self.base_price,
-            'additional_price_per_person': self.additional_price_per_person,
-            'additional_price_per_kid': self.additional_price_per_kid,
-            'extra_bed_price': self.extra_bed_price,
-            'image': image,
-        }
-
-    def serializePrice(self):
-        return {
-            'pk':self.pk,
-            'title':self.title,
-            'mon':self.mon,
-            'tue':self.tue,
-            'wed':self.wed,
-            'thu':self.thu,
-            'fri':self.fri,
-            'sat':self.sat,
-            'sun':self.sun,
-            'type':'Room_Type'
-        }
-def get_my_choices():
-    available_choices = []
-    for x in Amenity.objects.filter(active=True).all():
-        available_choices.append((x.pk,x.name))
-    return available_choices
-
-class Room_TypeForm(ModelForm):
-    amenities = forms.MultipleChoiceField(
-        widget= forms.CheckboxSelectMultiple,
-        choices= get_my_choices,
-        required=False
-    )
-        
-    class Meta:
-        model = Room_Type
-        fields = '__all__'
-        exclude = ['image','mon','tue','wed','thu','fri','sat','sun']
-
-class Floor(models.Model):
-    name = models.CharField(max_length=50)
-    number = models.IntegerField(unique=True)
-    description = RichTextField(blank=True)
-    active = models.BooleanField()
-
-    def __str__(self):
-        return f'{self.number} - {self.name}'
-
-    def serialize(self):
-        return {
-            'pk': self.pk,
-            'name': self.name,
-            'number': self.number,
-            'description': self.description,
-            'active' :self.active,
-        }
-
-class FloorForm(ModelForm):
-    class Meta:
-        model = Floor
-        fields = '__all__'
-
-class Room(models.Model):
-    room_type = models.ForeignKey(Room_Type, on_delete=models.CASCADE)
-    floor = models.ForeignKey(Floor,on_delete=models.CASCADE)
-    room_number = models.IntegerField(unique=True)
-
-    def __str__(self):
-        return str(self.room_number)
-
-    def serialize(self):
-        return {
-            'pk': self.pk,
-            'room_type': self.room_type.title,
-            'room_type_pk': self.room_type.pk,
-            'floor': f'{self.floor.number} - {self.floor.name}',
-            'floor_pk': self.floor.pk,
-            'room_number': self.room_number,
-        }
-
-class RoomForm(ModelForm):
-    class Meta:
-        model = Room
-        fields = '__all__'
-
-class Positions(models.Model):
-    name = models.CharField(max_length=255)
-    description = RichTextField(blank=True)
-
-    def __str__(self):
-        return self.name
-
-    def serialize(self):
-        return {
-            'pk': self.pk,
-            'name': self.name,
-            'description': self.description,
-        }
-
-class PositionsForm(ModelForm):
-    class Meta:
-        model = Positions
-        fields = '__all__'
-
-class Departments(models.Model):
-    name = models.CharField(max_length=255)
-    description = RichTextField(blank=True)
-    
-    def __str__(self):
-        return self.name
-    
-    def serialize(self):
-        return {
-            'pk': self.pk,
-            'name': self.name,
-            'description': self.description,
-        }
-
-class DepartmentsForm(ModelForm):
-    class Meta:
-        model = Departments
-        fields = '__all__'
-
-class User_permission(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
-class Employee(AbstractUser):
+class User(AbstractUser):
     TITLE_CHOICES = (
         ('Mr', 'Mr'),
         ('Mrs', 'Mrs'),
@@ -732,18 +490,81 @@ class Employee(AbstractUser):
         ('ZM', 'Zambia'),
         ('ZW', 'Zimbabwe'),
     )
-
+    
     title = models.CharField(max_length=4, choices=TITLE_CHOICES)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     confirm_password = models.CharField(max_length=255)
     date_of_birth = models.DateField()
     phone_number = models.CharField(max_length=10)
     country_calling_code = models.IntegerField(choices=CALLING_CODE_CHOICES)
-    department = models.ForeignKey(Departments, on_delete=models.SET_NULL,null=True, blank=True)
-    position = models.ForeignKey(Positions, on_delete=models.SET_DEFAULT, default=1)
     country = models.CharField(max_length=2, choices=COUNTRY_CHOICES)
     city = models.CharField(max_length=255)
     address = models.TextField()
+    
+class Positions(models.Model):
+    name = models.CharField(max_length=255)
+    description = RichTextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'name': self.name,
+            'description': self.description,
+        }
+
+class PositionsForm(ModelForm):
+    class Meta:
+        model = Positions
+        fields = '__all__'
+
+class Departments(models.Model):
+    name = models.CharField(max_length=255)
+    description = RichTextField(blank=True)
+    
+    def __str__(self):
+        return self.name
+    
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'name': self.name,
+            'description': self.description,
+        }
+
+class DepartmentsForm(ModelForm):
+    class Meta:
+        model = Departments
+        fields = '__all__'
+
+class User_permission(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class HousekeepingStatus(models.Model):
+    name = models.CharField(max_length=255)
+    description = RichTextField(blank=True)
+    active = models.BooleanField()
+    
+    def __str__(self):
+        return self.name
+    
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'name': self.name,
+            'description': self.description,
+            'active': self.active,
+        }
+
+class Employee(User):
+    department = models.ForeignKey(Departments, on_delete=models.SET_NULL,null=True, blank=True)
+    position = models.ForeignKey(Positions, on_delete=models.SET_DEFAULT, default=1)
+   
     image = models.ImageField(blank=True, null=True, upload_to='images/Employee/')
     user_permission = models.ManyToManyField(User_permission,blank=True)
 
@@ -791,21 +612,252 @@ class EmployeeForm(ModelForm):
             'date_of_birth':forms.TextInput(attrs={'type':'date'}),
         }
 
-class HousekeepingStatus(models.Model):
-    name = models.CharField(max_length=255)
+
+class VIP(models.Model):
+    name = models.CharField(max_length=50)
     description = RichTextField(blank=True)
-    active = models.BooleanField()
-    
+
+    def __str__(self):
+            return self.name
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'name':self.name,
+            'description': self.description,
+        }
+class Customer(User):
+    image = models.ImageField(blank=True, null=True, upload_to='images/Customer/')
+    vip = models.ForeignKey(VIP, blank=True,null=True, verbose_name="VIP", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.first_name
+
+    def serialize(self):
+        url = ''
+        if (self.image):
+            url = self.image.url
+
+        return {
+            'pk': self.pk,
+            'title': self.title,
+            'gender': self.gender,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'username': self.username,
+            'email': self.email,
+            'date_of_birth': self.date_of_birth,
+            'country_calling_code': self.country_calling_code,
+            'phone_number': self.phone_number,
+            'country': self.country,
+            'city': self.city,
+            'address': self.address,
+            'image' : url,
+        }
+
+
+class ImageFolder(models.Model):
+    name = models.CharField(max_length=256, unique=True)
+
     def __str__(self):
         return self.name
-    
+
+class Image(models.Model):
+    def upload_path(instance,title):
+        name = instance.folder.name
+        return f'{name}/{title}'
+
+    folder = models.ForeignKey(ImageFolder, on_delete=models.CASCADE)
+    image = models.ImageField(blank=True, null=True, upload_to=upload_path)
+
+    def __str__(self):
+            return self.image.name
+
     def serialize(self):
+        return {
+            'pk': self.pk,
+            'folder': {'pk': self.folder.pk, 'name': self.folder.name},
+            'image': self.image.url
+        }
+
+class ImageForm(ModelForm):
+    class Meta:
+        model = Image
+        fields = '__all__'      
+
+
+
+class Amenity(models.Model):
+    name = models.CharField(max_length=50)
+    description = RichTextField(blank=True)
+    active = models.BooleanField()
+    image = models.ManyToManyField(Image,blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def serialize(self):
+        image = []
+        if self.image.count() != 0:
+            for x in self.image.all():
+                image.append({'pk':x.pk,'name':x.image.name})
         return {
             'pk': self.pk,
             'name': self.name,
             'description': self.description,
-            'active': self.active,
+            'active' :self.active,
+            'image':image,
         }
+
+class AmenityForm(ModelForm):
+    class Meta:
+        model = Amenity
+        fields = '__all__'
+        exclude = ['image']
+
+class Room_Type(models.Model):
+    title = models.CharField(max_length=50)
+    short_code = models.CharField(max_length=25)
+    description = RichTextField(blank=True)
+    base_occupancy = models.IntegerField()
+    max_occupancy = models.IntegerField()
+    extra_bed = models.IntegerField()
+    amenities = models.ManyToManyField(Amenity, blank=True)
+    base_price = models.IntegerField()
+    additional_price_per_person = models.IntegerField()
+    additional_price_per_kid = models.IntegerField()
+    extra_bed_price = models.IntegerField()
+    image = models.ManyToManyField(Image,blank=True)
+    mon = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    tue = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    wed = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    thu = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    fri = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    sat = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    sun = models.DecimalField(max_digits=10, decimal_places=2, default=-1)
+    
+    def save(self, *args, **kwargs):
+        if self.mon == -1:
+            self.mon = self.base_price
+        if self.tue == -1:
+            self.tue = self.base_price
+        if self.wed == -1:
+            self.wed = self.base_price
+        if self.thu == -1:
+            self.thu = self.base_price
+        if self.fri == -1:
+            self.fri = self.base_price
+        if self.sat == -1:
+            self.sat = self.base_price
+        if self.sun == -1:
+            self.sun = self.base_price
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+    def serialize(self):
+        image = []
+        if self.image.count() != 0:
+            for x in self.image.all():
+                image.append({'pk':x.pk,'name':x.image.name})
+        amenities = []
+        if self.amenities.count() != 0:
+            for x in self.amenities.all():
+                if x.active:
+                    amenities.append(x.pk)
+        return {
+            'pk': self.pk,
+            'title': self.title, 
+            'short_code': self.short_code,
+            'description': self.description,
+            'base_occupancy': self.base_occupancy,
+            'max_occupancy': self.max_occupancy,
+            'extra_bed' : self.extra_bed,
+            'amenities': amenities,
+            'base_price': self.base_price,
+            'additional_price_per_person': self.additional_price_per_person,
+            'additional_price_per_kid': self.additional_price_per_kid,
+            'extra_bed_price': self.extra_bed_price,
+            'image': image,
+        }
+
+    def serializePrice(self):
+        return {
+            'pk':self.pk,
+            'title':self.title,
+            'mon':self.mon,
+            'tue':self.tue,
+            'wed':self.wed,
+            'thu':self.thu,
+            'fri':self.fri,
+            'sat':self.sat,
+            'sun':self.sun,
+            'type':'Room_Type'
+        }
+def get_my_choices():
+    available_choices = []
+    for x in Amenity.objects.filter(active=True).all():
+        available_choices.append((x.pk,x.name))
+    return available_choices
+
+class Room_TypeForm(ModelForm):
+    amenities = forms.MultipleChoiceField(
+        widget= forms.CheckboxSelectMultiple,
+        choices= get_my_choices,
+        required=False
+    )
+        
+    class Meta:
+        model = Room_Type
+        fields = '__all__'
+        exclude = ['image','mon','tue','wed','thu','fri','sat','sun']
+
+class Floor(models.Model):
+    name = models.CharField(max_length=50)
+    number = models.IntegerField(unique=True)
+    description = RichTextField(blank=True)
+    active = models.BooleanField()
+
+    def __str__(self):
+        return f'{self.number} - {self.name}'
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'name': self.name,
+            'number': self.number,
+            'description': self.description,
+            'active' :self.active,
+        }
+
+class FloorForm(ModelForm):
+    class Meta:
+        model = Floor
+        fields = '__all__'
+
+class Room(models.Model):
+    room_type = models.ForeignKey(Room_Type, on_delete=models.CASCADE)
+    floor = models.ForeignKey(Floor,on_delete=models.CASCADE)
+    room_number = models.IntegerField(unique=True)
+
+    def __str__(self):
+        return str(self.room_number)
+
+    def serialize(self):
+        return {
+            'pk': self.pk,
+            'room_type': self.room_type.title,
+            'room_type_pk': self.room_type.pk,
+            'floor': f'{self.floor.number} - {self.floor.name}',
+            'floor_pk': self.floor.pk,
+            'room_number': self.room_number,
+        }
+
+class RoomForm(ModelForm):
+    class Meta:
+        model = Room
+        fields = '__all__'
 
 class HousekeepingStatusForm(ModelForm):
     class Meta:
@@ -917,7 +969,6 @@ class Hall_TypeForm(ModelForm):
         fields = '__all__'
         exclude = ['image','mon','tue','wed','thu','fri','sat','sun']
 
-
 class Hall(models.Model):
     hall_type = models.ForeignKey(Hall_Type, on_delete=models.CASCADE)
     floor = models.ForeignKey(Floor,on_delete=models.CASCADE)
@@ -961,7 +1012,6 @@ class HousekeepingForHallForm(ModelForm):
         model = HousekeepingForHall
         fields = '__all__'
 
-
 class Service(models.Model):
     price_typeChoice = (
         ('Per Person','Per Person'),
@@ -986,9 +1036,95 @@ class Service(models.Model):
             'active': self.active,
             'description': self.description,
         }
+
 class ServiceForm(ModelForm):
     class Meta:
         model = Service
         fields = '__all__'
 
+class Coupon(models.Model):
+    COUPON_TYPE_CHOICE = (
+        ('percentage','Percentage'),
+        ('fixed','Fixed')
+    )
+
+    title = models.CharField(max_length=100, verbose_name="Offer Title")
+    description = RichTextField()
+    start_datetime = models.DateTimeField()
+    end_datetime = models.DateTimeField()
+    active = models.BooleanField(default=False)
+    coupon_code = models.CharField(max_length=150)
+    coupon_type = models.CharField(max_length=150, choices=COUPON_TYPE_CHOICE)
+    coupon_value = models.DecimalField(max_digits=10, decimal_places=2)
+    minimum_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    valid_only_once = models.BooleanField()
+    image = models.ManyToManyField(Image,blank=True)
+    customer = models.ManyToManyField(Employee,blank=True)
+    room_type = models.ManyToManyField(Room_Type,blank=True)
+    hall_type = models.ManyToManyField(Hall_Type,blank=True)
+    
+    def check_availability(self):
+        if type( self.start_datetime) is str:
+            if datetime.strptime(self.start_datetime, '%Y-%m-%dT%H:%M') <= datetime.now() and datetime.now() <= datetime.strptime(self.end_datetime, '%Y-%m-%dT%H:%M'):
+                self.active = True
+            else:
+                self.active = False
+        elif type( self.start_datetime) is datetime:
+            if self.start_datetime <= timezone.now() + timedelta(hours=1)   and timezone.now() + timedelta(hours=1)   <= self.end_datetime:
+                self.active = True
+            else:
+                self.active = False
+
+        self.save()
+
+        return self.active
+            
+
+    def __str__(self):
+        return self.title
+
+    def serialize(self):
+        image = []
+        for x in self.image.all():
+            image.append({'pk': x.pk, 'name':x.image.name})
+
+        customer = []
+        for x in self.customer.all():
+            customer.append({'pk': x.pk, 'name':f'{x.first_name} {x.last_name}'})
+            
+        room_type = []
+        for x in self.room_type.all():
+            room_type.append({'pk': x.pk, 'name':x.title})
+            
+        hall_type = []
+        for x in self.hall_type.all():
+            hall_type.append({'pk': x.pk, 'name':x.title})        
+        
+        return {
+            'pk':self.pk,
+            'title':self.title,
+            'description':self.description,
+            'start_datetime':self.start_datetime,
+            'end_datetime':self.end_datetime,
+            'active' :self.active,
+            'coupon_code':self.coupon_code,
+            'coupon_type':self.coupon_type,
+            'coupon_value':self.coupon_value,
+            'minimum_amount':self.minimum_amount,
+            'image': image,
+            'customer':customer,
+            'room_type':room_type,
+            'hall_type':hall_type,
+            'valid_only_once':self.valid_only_once,
+        }
+
+class CouponForm(ModelForm):
+    class Meta:
+        model = Coupon
+        fields = '__all__'
+        exclude = ['customer','room_type','hall_type','image','active']
+        widgets = {
+            'start_datetime':forms.DateInput(attrs={'type':'datetime-local'}),
+            'end_datetime':forms.DateInput(attrs={'type':'datetime-local'}),
+        }
 

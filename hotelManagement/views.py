@@ -1,4 +1,4 @@
-from distutils.log import error
+from datetime import datetime
 from django.shortcuts import render, reverse
 from django.contrib.auth import login,logout,authenticate
 from django.http import HttpResponse,JsonResponse, HttpResponseRedirect
@@ -1426,3 +1426,146 @@ def delete_services(request):
     Service.objects.get(pk = request.GET.get('pk')).delete()
 
     return HttpResponseRedirect(reverse('services'))
+
+
+
+def couponView(request):
+    if request.user.is_authenticated:
+        return render(request,'hotelManagement/coupon.html',{
+            'form': CouponForm(),
+            'customers': Employee.objects.all(),
+            'room_types': Room_Type.objects.all(),
+            'hall_types': Hall_Type.objects.all(),
+        })
+
+    return HttpResponseRedirect(reverse('login'))
+    
+def add_coupon(request):
+    if request.method == 'POST':
+        formset = CouponForm(request.POST, request.FILES)
+        if formset.is_valid():
+            if datetime.strptime(request.POST['start_datetime'], '%Y-%m-%dT%H:%M') >= datetime.strptime(request.POST['end_datetime'], '%Y-%m-%dT%H:%M'):
+                return JsonResponse({
+                    'Result':'Failed',
+                    'error':'{"start_datetime": [{"message": "Start datetime must be a date before the End datetime", "code": "error"}]}'
+                    },
+                    safe=False)
+
+            formset.active = "valid_only_once" in request.POST
+            formset.save()
+            coupon = Coupon.objects.last()
+            coupon.check_availability()
+            
+            for x in request.POST.getlist('image'):
+                coupon.image.add(Image.objects.get(pk = x))
+            for x in request.POST.getlist('customer'):
+                coupon.customer.add(Employee.objects.get(pk = x))
+            for x in request.POST.getlist('room-type'):
+                coupon.room_type.add(Room_Type.objects.get(pk = x))
+            for x in request.POST.getlist('hall-type'):
+                coupon.hall_type.add(Hall_Type.objects.get(pk = x))
+            
+            return JsonResponse({
+            'Result':'Succeed',
+            },
+            safe=False)
+
+        
+        return JsonResponse({
+            'Result':'Failed',
+            'error': 'formset.errors.as_json()',
+            },
+            safe=False)
+
+    return HttpResponse('Make sure that you send a post request')
+
+def get_coupon(request):
+    if (request.GET.get('pk')):
+        coupon = Coupon.objects.get(pk = request.GET.get('pk'))
+        return JsonResponse(coupon.serialize(), safe=False)
+
+
+    start = int(request.GET.get('start') or 1)
+    end = int(request.GET.get('end') or start + 4)
+
+    data = Coupon.objects.all()
+
+    #if user want specific room type
+    if request.GET.get('contain'):
+        data =  Coupon.objects.filter(title__icontains=request.GET.get('contain')).all()
+
+    #get from start to end posts
+    data2 = []
+    index = 1
+    for x in data:
+        if index >= start  and index <= end:
+            data2.append(x)
+        index += 1
+
+    for x in data2:
+        x.check_availability()
+
+    return JsonResponse({
+        'total_coupon':data.count(),
+        'coupon':[x.serialize() for x in data2]
+        },safe=False)
+
+def update_coupon(request):
+    if request.method == 'POST':
+        data = request.POST
+        formset = CouponForm(request.POST)
+        coupon = Coupon.objects.get(pk = data['pk'])
+
+        if formset.is_valid():
+            if datetime.strptime(request.POST['start_datetime'], '%Y-%m-%dT%H:%M') >= datetime.strptime(request.POST['end_datetime'], '%Y-%m-%dT%H:%M'):
+                return JsonResponse({
+                    'Result':'Failed',
+                    'error':'{"start_datetime": [{"message": "Start datetime must be a date before the End datetime", "code": "error"}]}'
+                    },
+                    safe=False)
+                
+            for key in data:
+                if key  != 'valid_only_once' and key != 'image' and key != 'active' and key != 'description' and key != 'customer' and key != 'room_type' and key != 'hall_type':
+                    setattr(coupon, key, data[key])
+
+            if 'valid_only_once' in data:
+                coupon.valid_only_once = True
+            else:
+                coupon.valid_only_once = False
+
+            coupon.description = data['description']
+
+            coupon.image.clear()
+            for x in data.getlist('image'):
+                coupon.image.add(Image.objects.get(pk = x))
+            
+            coupon.customer.clear()
+            for x in data.getlist('customer'):
+                coupon.customer.add(Employee.objects.get(pk = x))
+
+            coupon.room_type.clear()
+            for x in data.getlist('room-type'):
+                coupon.room_type.add(Room_Type.objects.get(pk = x))
+
+            coupon.hall_type.clear()
+            for x in data.getlist('hall-type'):
+                coupon.hall_type.add(Hall_Type.objects.get(pk = x))
+
+            coupon.check_availability()
+            coupon.save()
+            return JsonResponse({'Result':'Succeed',},safe=False)
+
+
+        return JsonResponse({
+            'Result':'Failed',
+            'error': formset.errors.as_json(),
+            },
+            safe=False)
+        
+
+    return HttpResponse('You are in the wrong place, this an api only for POST request, make sure that you sent a POST request')
+
+def delete_coupon(request):
+    Coupon.objects.get(pk = request.GET.get('pk')).delete()
+
+    return HttpResponseRedirect(reverse('coupon'))

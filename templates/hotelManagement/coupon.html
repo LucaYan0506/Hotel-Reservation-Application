@@ -1,0 +1,124 @@
+{% extends 'hotelManagement/layout.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'hotelManagement/coupon.css' %}">
+{% endblock head %}
+
+{% block body %}
+    <h1>Coupon Management</h1>
+
+    <div id="table-container">
+        <p style="padding:0;margin-top:0;">Coupon Management</p>
+        <button onclick="show_couponForm()" class="btn" id="new-coupon"><b>+ </b>Add</button>
+        <div style="clear: both;"></div>
+        <div id="search-bar-container">
+            Search:
+            <input type="text" id="search-bar"></input>
+        </div>
+
+        <div style="width: 50%; display:inline-block">
+          Show 
+          <select onchange="start=1;load()" style="padding:5px 10px;" name="" id="">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+          </select> 
+          entries
+      </div>
+        <div style="width: 100%; overflow: auto;">
+          <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Offer Title</th>
+                  <th scope="col">Active</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+               
+              </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="form-container" style="font-size:18px;display: none;">
+        <form action="/admin/coupon/form/" method="POST">
+          {% csrf_token %}
+          {{ form }}
+          <!--Image-->
+          <label for="id_image">Image:</label>
+          <div name="image" id="id_image" style="">
+          </div>
+          <input readonly type="text" class="btn" id="add-image" value="Add Image">
+
+          <!--Select Users-->
+          <label for="id_customer">Customer: <br> 
+            <small style="color: #6c757d;">Click to select a customer</small>
+          </label>
+          <div class="options customer" id="group-1">
+            <small>All customers</small>
+            <ul>
+              {% for customer in customers %}
+                <li value={{ customer.pk }}>{{ customer.first_name }} {{ customer.last_name }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="options customer" id="group-2">
+            <small>Selected customers</small>
+            <ul>
+
+            </ul>
+          </div>
+          <div style="clear:both"></div>
+          <!--Select room type-->
+          <label for="id_room-type">Room Type: <br> 
+            <small style="color: #6c757d;">Click to select a toom type</small>
+          </label>
+          <div class="options room-type" id="group-1">
+            <small>All room types</small>
+            <ul>
+              {% for room_type in room_types %}
+                <li value={{ room_type.pk }}>{{ room_type.title }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="options room-type" id="group-2">
+            <small>Selected room types</small>
+            <ul>
+
+            </ul>
+          </div>
+          <div style="clear:both"></div>
+          <!--Select hall type-->
+          <label for="id_hall-type">Hall Type: <br> 
+            <small style="color: #6c757d;">Click to select a hall type</small>
+          </label>
+          <div class="options hall-type" id="group-1">
+            <small>All hall types</small>
+            <ul>
+              {% for hall_type in hall_types %}
+                <li value={{ hall_type.pk }}>{{ hall_type.title }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="options hall-type" id="group-2">
+            <small>Selected hall types</small>
+            <ul>
+
+            </ul>
+          </div>
+          <div style="clear:both"></div>
+
+
+          <button class="btn" style=" color: #fff;background-color: #28a745;border-color: #28a745;float: right; width: calc(50% - 10px);;">Add</button>
+        </form>
+        <button onclick="hide_couponForm()" class="btn" style="color: #fff; background-color: #dc3545; border-color: #dc3545;width: calc(50% - 10px);">Cancel</button>
+    </div>
+
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+    <script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+    <script type="text/javascript" src="{% static "hotelManagement/coupon.js" %}"></script>
+{% endblock body %}

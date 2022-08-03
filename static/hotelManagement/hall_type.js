@@ -6,13 +6,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 })
 
 document.querySelector('#add-image').onclick = () => {
-    myWindow = window.open('http://127.0.0.1:8000/admin/image/','popUpWindow','height=500,width=400,left=100,top=100');
-    // var timer = setInterval(function() {   
-    //     if(myWindow.closed) {  
-    //         clearInterval(timer);  
-    //         alert('closed');  
-    //     }  
-    // }, 1000); 
+    myWindow = window.open(`http://${location.host}/admin/image/`,'popUpWindow','height=500,width=400,left=100,top=100');
 };
 
 document.querySelector('#search-bar').addEventListener('keypress', e => {
